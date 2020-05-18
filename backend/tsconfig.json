@@ -10,7 +10,8 @@
         ],
         "baseUrl": "src",
         "paths": {
-            "@sandbox/*": [ "sandbox/*" ]
+            "@core/*": ["core/*"],
+            "@sandbox/*": [ "sandbox/*" ],
         }
     },
     "include": [
