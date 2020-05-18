@@ -6,18 +6,25 @@
   "scripts": {
     "start": "node --inspect=5858 -r ts-node/register ./src/server.ts",
     "start:watch": "nodemon",
-    "build": "tsc"
+    "build": "tsc",
+    "test": "mocha -r ts-node/register -r tsconfig-paths/register tests/**/*.spec.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "module-alias": "^2.2.2",
     "ws": "^7.3.0"
   },
   "devDependencies": {
+    "@types/chai": "^4.2.11",
+    "@types/mocha": "^7.0.2",
     "@types/ws": "^7.2.4",
+    "chai": "^4.2.0",
+    "mocha": "^7.1.2",
     "nodemon": "^2.0.4",
     "ts-node": "^8.10.1",
+    "tsconfig-paths": "^3.9.0",
     "typescript": "^3.9.2"
   }
 }
