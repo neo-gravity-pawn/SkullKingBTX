@@ -43,6 +43,11 @@ describe('Card', () => {
         expect(c.color).to.equal(ICardColor.black);
     });
 
+    it('Other cards cards should have no color', () => {
+        const c = new Card({type: ICardType.pirate, color: ICardColor.red});
+        expect(c.color).to.equal(ICardColor.none);
+    });
+
     it('Wrong values should lead to error', () => {
         expect( () => {
             const c = new Card({type: ICardType.pirate, value: 10});
