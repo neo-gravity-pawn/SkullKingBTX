@@ -62,6 +62,9 @@ export class Card {
                 throw Error('Color does not fit to standard color card');
             }
         }
+        if (this.configuration.type === ICardType.trump) {
+            this.configuration.color = ICardColor.black;
+        }
     }
     get type(): ICardType {
         return this.configuration.type;

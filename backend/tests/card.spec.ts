@@ -33,6 +33,14 @@ describe('Card', () => {
         expect( () => {
             const c = new Card({type: ICardType.color, value: 10});
         }).to.throw();
+        expect( () => {
+            const c = new Card({type: ICardType.color, value: 10, color: ICardColor.black});
+        }).to.throw();
+    });
+
+    it('Trump cards should be black', () => {
+        const c = new Card({type: ICardType.trump, value: 5});
+        expect(c.color).to.equal(ICardColor.black);
     });
 
     it('Wrong values should lead to error', () => {
