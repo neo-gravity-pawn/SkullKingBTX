@@ -7,15 +7,25 @@ export enum ICardType {
     skullking = 'SKULLKING'
 }
 
+export enum ICardColor {
+    yellow,
+    red,
+    blue,
+    black,
+    none
+}
+
 export interface ICardConfiguration {
     type: ICardType;
     value?: number;
+    color?: ICardColor;
 }
 
 export class Card {
     private configuration = {
-        type: ICardType.color,
-        value: -1
+        type: ICardType.escape,
+        value: -1,
+        color: ICardColor.none
     };
     private rangeMap = [
         {
@@ -30,6 +40,7 @@ export class Card {
     constructor(configuration: ICardConfiguration) {
          this.configuration = {...this.configuration, ...configuration};
          this.checkValue();
+         this.checkColor();
     };
 
     private checkValue() {
@@ -43,10 +54,22 @@ export class Card {
             }
         }
     }
+
+    private checkColor() {
+        if (this.configuration.type === ICardType.color) {
+            const c = this.configuration.color;
+            if (c === ICardColor.black || c === ICardColor.none) {
+                throw Error('Color does not fit to standard color card');
+            }
+        }
+    }
     get type(): ICardType {
         return this.configuration.type;
     }
     get value(): Number {
         return this.configuration.value;
+    }
+    get color(): ICardColor {
+        return this.configuration.color;
     }
 }

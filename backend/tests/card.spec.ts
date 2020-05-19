@@ -1,12 +1,13 @@
-import { Card, ICardType } from '@core/card';
+import { Card, ICardType, ICardColor } from '@core/card';
 import { expect } from 'chai';
 import 'mocha';
  
 describe('Card', () => {
     it('Output should be the same as input', () => {
-        let c = new Card({type: ICardType.color, value: 10 });
+        let c = new Card({type: ICardType.color, value: 10, color: ICardColor.yellow });
         expect(c.type).to.equal(ICardType.color);
         expect(c.value).to.equal(10);
+        expect(c.color).to.equal(ICardColor.yellow);
         c = new Card({type: ICardType.trump, value: 3 });
         expect(c.type).to.equal(ICardType.trump);
         expect(c.value).to.equal(3);
@@ -21,6 +22,17 @@ describe('Card', () => {
     it('Non-color cards should have value -1', () => {
         const c = new Card({type: ICardType.pirate});
         expect(c.value).to.equal(-1);
+    });
+
+    it('Color cards should have a color', () => {
+        const c = new Card({type: ICardType.color, value: 10, color: ICardColor.yellow});
+        expect(c.color).to.equal(ICardColor.yellow);
+    });
+
+    it('Color card note being of correct color / no color leads to error', () => {
+        expect( () => {
+            const c = new Card({type: ICardType.color, value: 10});
+        }).to.throw();
     });
 
     it('Wrong values should lead to error', () => {
