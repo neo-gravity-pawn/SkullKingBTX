@@ -22,7 +22,7 @@ export interface ICardConfiguration {
 }
 
 export class Card {
-    private configuration = {
+    protected configuration = {
         type: ICardType.escape,
         value: -1,
         color: ICardColor.none
@@ -37,7 +37,7 @@ export class Card {
             range: [1, 13]
         }
     ]
-    constructor(configuration: ICardConfiguration) {
+    constructor(configuration?: ICardConfiguration) {
          this.configuration = {...this.configuration, ...configuration};
          this.checkValue();
          this.checkColor();
@@ -71,7 +71,7 @@ export class Card {
     get type(): ICardType {
         return this.configuration.type;
     }
-    get value(): Number {
+    get value(): number {
         return this.configuration.value;
     }
     get color(): ICardColor {

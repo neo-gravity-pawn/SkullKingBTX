@@ -3,6 +3,9 @@ import { expect } from 'chai';
 import 'mocha';
  
 describe('Card', () => {
+    it('Should support empty constructor', () => {
+        let c = new Card();
+    });
     it('Output should be the same as input', () => {
         let c = new Card({type: ICardType.color, value: 10, color: ICardColor.yellow });
         expect(c.type).to.equal(ICardType.color);
