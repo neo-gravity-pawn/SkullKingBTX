@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import 'mocha';
 
 describe ('Mutable Card', () => {
+
     it('Should take type and two cards array as input', () => {
         const mc = new MutableCard(
             MutableCardType.scaryMary,
@@ -52,6 +53,6 @@ describe ('Mutable Card', () => {
         expect(() => {
             mc.selectCard(3);
         }).to.throw();
-
     });
+    
 });
