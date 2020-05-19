@@ -15,14 +15,20 @@ export enum ICardColor {
     none
 }
 
-export interface ICardConfiguration {
+export interface ICardConfigurationInput {
     type: ICardType;
     value?: number;
     color?: ICardColor;
 }
 
+interface ICardConfiguration {
+    type: ICardType;
+    value: number;
+    color: ICardColor; 
+}
+
 export class Card {
-    protected configuration = {
+    protected configuration: ICardConfiguration = {
         type: ICardType.escape,
         value: -1,
         color: ICardColor.none
@@ -37,7 +43,7 @@ export class Card {
             range: [1, 13]
         }
     ]
-    constructor(configuration?: ICardConfiguration) {
+    constructor(configuration?: ICardConfigurationInput) {
          this.configuration = {...this.configuration, ...configuration};
          this.checkValue();
          this.checkColor();
@@ -76,5 +82,8 @@ export class Card {
     }
     get color(): ICardColor {
         return this.configuration.color;
+    }
+    get conf(): ICardConfiguration {
+        return this.configuration;
     }
 }
