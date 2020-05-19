@@ -28,3 +28,7 @@ export class MutableCard extends Card {
         return this.mType;
     }
 }
+
+export function isMutableCard(card: Card) {
+    return (card instanceof MutableCard)
+}
