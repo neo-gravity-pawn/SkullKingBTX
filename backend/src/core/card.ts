@@ -1,4 +1,4 @@
-export enum ICardType {
+export enum CardType {
     escape = 'ESCAPE',
     color = 'COLOR',
     trump = 'TRUMP',
@@ -7,7 +7,7 @@ export enum ICardType {
     skullking = 'SKULLKING'
 }
 
-export enum ICardColor {
+export enum CardColor {
     yellow,
     red,
     blue,
@@ -16,30 +16,30 @@ export enum ICardColor {
 }
 
 export interface ICardConfigurationInput {
-    type: ICardType;
+    type: CardType;
     value?: number;
-    color?: ICardColor;
+    color?: CardColor;
 }
 
 interface ICardConfiguration {
-    type: ICardType;
+    type: CardType;
     value: number;
-    color: ICardColor; 
+    color: CardColor; 
 }
 
 export class Card {
     protected configuration: ICardConfiguration = {
-        type: ICardType.escape,
+        type: CardType.escape,
         value: -1,
-        color: ICardColor.none
+        color: CardColor.none
     };
     private rangeMap = [
         {
-            types: [ICardType.escape, ICardType.mermaid, ICardType.pirate, ICardType.skullking], 
+            types: [CardType.escape, CardType.mermaid, CardType.pirate, CardType.skullking], 
             range: [-1, -1]
         },
         {
-            types: [ICardType.color, ICardType.trump], 
+            types: [CardType.color, CardType.trump], 
             range: [1, 13]
         }
     ]
@@ -62,25 +62,25 @@ export class Card {
     }
 
     private checkColor() {
-        if (this.configuration.type === ICardType.color) {
+        if (this.configuration.type === CardType.color) {
             const c = this.configuration.color;
-            if (c === ICardColor.black || c === ICardColor.none) {
+            if (c === CardColor.black || c === CardColor.none) {
                 throw Error('Color does not fit to standard color card');
             }
         }
-        else if (this.configuration.type === ICardType.trump) {
-            this.configuration.color = ICardColor.black;
+        else if (this.configuration.type === CardType.trump) {
+            this.configuration.color = CardColor.black;
         } else {
-            this.configuration.color = ICardColor.none;
+            this.configuration.color = CardColor.none;
         }
     }
-    get type(): ICardType {
+    get type(): CardType {
         return this.configuration.type;
     }
     get value(): number {
         return this.configuration.value;
     }
-    get color(): ICardColor {
+    get color(): CardColor {
         return this.configuration.color;
     }
     get conf(): ICardConfiguration {
