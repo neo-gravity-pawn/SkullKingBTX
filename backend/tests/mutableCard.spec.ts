@@ -10,4 +10,11 @@ describe ('Mutable Card', () => {
             new Card({type: ICardType.color, value: 5, color: ICardColor.yellow})
         )
     });
+
+    it('Should should have the values of the first card', () => {
+        const c1 = new Card({type: ICardType.pirate});
+        const c2 = new Card({type: ICardType.color, value: 5, color: ICardColor.yellow});
+        const mc = new MutableCard(c1, c2);
+        expect(mc.type).to.equal(c1.type);
+    });
 });
