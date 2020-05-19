@@ -1,12 +1,18 @@
 import { Card } from './card';
 
+export enum MutableCardType {
+    scaryMary
+}
+
 export class MutableCard extends Card {
     private cards: Array<Card>;
+    private mType: MutableCardType;
     private selectedCardIndex = 0;
-    constructor(cards: Array<Card>) {
+    constructor(type: MutableCardType, cards: Array<Card>) {
         super();
         this.cards = cards;
         this.setConfiguration();
+        this.mType = type;
     }
 
     private setConfiguration() {
@@ -16,5 +22,9 @@ export class MutableCard extends Card {
     public selectCard(index: number) {
         this.selectedCardIndex = index;
         this.setConfiguration();
+    }
+
+    get mutableType() {
+        return this.mType;
     }
 }
