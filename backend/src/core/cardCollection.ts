@@ -39,7 +39,12 @@ export class CardCollection {
     }
 
     public shuffle() {
-        this.cards.sort(() => Math.random() - 0.5); 
+        // Fisher-Yates shuffle
+        // https://javascript.info/task/shuffle
+        for (let i = this.cards.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
+          }
     }
 
     public sort() {
