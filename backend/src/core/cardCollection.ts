@@ -25,4 +25,8 @@ export class CardCollection {
         const card = this.cards.splice(index, 1);
         return card[0];
     }
+
+    public shuffle() {
+        this.cards.sort(() => Math.random() - 0.5); 
+    }
 }
