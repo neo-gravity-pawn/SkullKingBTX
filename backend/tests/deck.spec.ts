@@ -132,10 +132,12 @@ describe('Deck', () => {
         const c3 = s.getCard(30);
         const c4 = s.getCard(40);
         s.shuffle();
-        expect(s.getCard(10)).to.not.be.equal(c1);
-        expect(s.getCard(20)).to.not.be.equal(c2);
-        expect(s.getCard(40)).to.not.be.equal(c3);
-        expect(s.getCard(40)).to.not.be.equal(c4);
+        expect(
+            s.getCard(10) === c1 &&
+            s.getCard(20) === c2 &&
+            s.getCard(30) === c3 &&
+            s.getCard(40) === c4
+        ).to.be.false;
     })
     it('should be possible to remove cards from deck', () => {
         const s = new Deck();
