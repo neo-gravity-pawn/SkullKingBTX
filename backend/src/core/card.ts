@@ -8,11 +8,11 @@ export enum CardType {
 }
 
 export enum CardColor {
-    yellow,
-    red,
-    blue,
-    black,
-    none
+    yellow = 'YELLOW',
+    red = 'RED',
+    blue = 'BLUE',
+    black = 'BLACK',
+    none = 'NONE'
 }
 
 export interface ICardConfigurationInput {
