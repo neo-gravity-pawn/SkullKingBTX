@@ -13,7 +13,7 @@ export class Deck extends CardCollection {
         const colors = [CardColor.red, CardColor.blue, CardColor.yellow, CardColor.black];
         colors.forEach( (color: CardColor) => {
             for (let value = 1; value <= 13; value ++) {
-                this.cards.push(
+                this.addCard(
                     new Card({type: (color === CardColor.black) ? CardType.trump : CardType.color , color, value })
                 );
             }
@@ -22,14 +22,14 @@ export class Deck extends CardCollection {
 
     private addOtherCards() {
         for (let i = 0; i < 5; i++) {
-            this.cards.push(new Card({type: CardType.pirate}));
-            this.cards.push(new Card({type: CardType.escape}));
+            this.addCard(new Card({type: CardType.pirate}));
+            this.addCard(new Card({type: CardType.escape}));
         }
         for (let i = 0; i < 2; i++) {
-            this.cards.push(new Card({type: CardType.mermaid}));
+            this.addCard(new Card({type: CardType.mermaid}));
         }
-        this.cards.push(new Card({type: CardType.skullking}));
-        this.cards.push(new MutableCard(MutableCardType.scaryMary,
+        this.addCard(new Card({type: CardType.skullking}));
+        this.addCard(new MutableCard(MutableCardType.scaryMary,
             [new Card({type: CardType.pirate}), new Card({type: CardType.escape})]
         ));
     }
