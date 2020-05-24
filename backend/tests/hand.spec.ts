@@ -4,7 +4,7 @@ import { CardCollection } from '@core/cardCollection';
 import { expect } from 'chai';
 import 'mocha';
 
-/*describe('Hand', () => {
+describe('Hand', () => {
     it('should be sortable', () => {
         const hand = new CardCollection();
         const cards = [
@@ -18,7 +18,7 @@ import 'mocha';
             new Card({type: CardType.pirate}),
             new Card({type: CardType.skullking}),
             new Card({type: CardType.mermaid}),
-            new MutableCard(MutableCardType.scaryMary, [new Card({type: CardType.escape}), new Card({type: CardType.pirate})]),
+            new MutableCard(CardType.scarymary, [new Card({type: CardType.escape}), new Card({type: CardType.pirate})]),
             new Card({type: CardType.escape})
         ]
         cards.forEach( card => {
@@ -26,7 +26,14 @@ import 'mocha';
         });
         hand.sort();
         expect(
-            hand.getCard(0) === cards[8]
+            hand.getCard(0) === cards[8] &&
+            hand.getCard(1) === cards[10] &&
+            hand.getCard(2) === cards[6] &&
+            hand.getCard(3) === cards[7] &&
+            hand.getCard(4) === cards[9] &&
+            hand.getCard(4) === cards[9] &&
+            hand.getCard(11) === cards[11]
+
         ).to.be.true;
     })
-})*/
+})
