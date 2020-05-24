@@ -1,9 +1,11 @@
+import { isMutableCard, MutableCard } from '@core/mutableCard';
 import { CardCollection } from '@core/cardCollection';
 import { Card } from "@core/card";
 
 function createCardString(card: Card) {
     const c = card.conf;
-    return `${c.type} - ${c.value} - ${c.color}`;
+    const t = isMutableCard(card) ? (card as MutableCard).mutableType : card.type;
+    return `${t} - ${c.value} - ${c.color}`;
 }
 export function printCard(card: Card) { 
     console.log(createCardString(card));
