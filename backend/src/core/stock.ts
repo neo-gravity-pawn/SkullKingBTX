@@ -1,10 +1,10 @@
+import { CardCollection } from '@core/cardCollection';
 import { MutableCard, MutableCardType } from './mutableCard';
 import { Card, CardColor, CardType } from "./card";
 
-export class Stock {
-    private cards: Array<Card>;
+export class Stock extends CardCollection {
     constructor() {
-        this.cards = new Array<Card>();
+        super();
         this.addColorCards();
         this.addOtherCards();
     }
@@ -32,16 +32,5 @@ export class Stock {
         this.cards.push(new MutableCard(MutableCardType.scaryMary,
             [new Card({type: CardType.pirate}), new Card({type: CardType.escape})]
         ));
-    }
-
-    public getNumberOfCards() {
-        return this.cards.length;
-    }
-
-    public getCard(index: number) {
-        if (index < 0 || index >= this.cards.length) {
-            throw Error('Stock can only provide cards within range [0, '+this.cards.length + ']');
-        }
-        return this.cards[index];
     }
 }

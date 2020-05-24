@@ -1,7 +1,7 @@
 import { Card } from "./card";
 
 export class CardCollection {
-    private cards: Array<Card>;
+    protected cards: Array<Card>;
     constructor() {
         this.cards = new Array<Card>();
     }
