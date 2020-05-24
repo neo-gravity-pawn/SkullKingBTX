@@ -2,7 +2,7 @@ import { CardCollection } from '@core/cardCollection';
 import { MutableCard, MutableCardType } from './mutableCard';
 import { Card, CardColor, CardType } from "./card";
 
-export class Stock extends CardCollection {
+export class Deck extends CardCollection {
     constructor() {
         super();
         this.addColorCards();

@@ -1,24 +1,24 @@
-import { Stock } from '@core/stock';
+import { Deck } from '@core/deck';
 import { expect } from 'chai';
 import 'mocha';
 import { isMutableCard, MutableCard, MutableCardType } from '@core/mutableCard';
 import { CardType, CardColor } from '@core/card';
 
-describe('Stock', () => {
+describe('Deck', () => {
 
     it('should contain 66 cards', () => {
-        const s = new Stock();
+        const s = new Deck();
         expect(s.getNumberOfCards()).to.be.equal(66);
     })
 
     it('cards should be accessible', () => {
-        const s = new Stock();
+        const s = new Deck();
         const c = s.getCard(0);
         const c2 = s.getCard(65);
     })
 
     it('should throw error if invalid cards are accessed', () => {
-        const s = new Stock();
+        const s = new Deck();
         expect(() => {
             const c = s.getCard(-1);
         }).to.throw();
@@ -28,7 +28,7 @@ describe('Stock', () => {
     })
 
     it('should contain 65 standard cards and one mutable scarymary card', () => {
-        const s = new Stock();
+        const s = new Deck();
         let n = 0;
         let m = 0;
         for (let i = 0; i < s.getNumberOfCards(); i++) {
@@ -45,7 +45,7 @@ describe('Stock', () => {
     })
 
     it('scary mary should be either pirate (0) or escape (1)', () => {
-        const s = new Stock();
+        const s = new Deck();
         for (let i = 0; i < s.getNumberOfCards(); i++) {
             const c = s.getCard(i);
             if (isMutableCard(c)) {
@@ -60,7 +60,7 @@ describe('Stock', () => {
     })
 
     it('should contain 52 color cards, 5 escapes, 5 pirates, 2 mermaids, 1 scull king, 1 scary mary', () => {
-        const s = new Stock();
+        const s = new Deck();
         let co = 0;
         let p = 0;
         let e = 0;
@@ -101,7 +101,7 @@ describe('Stock', () => {
     it('color card values should be all values between 1 and 13', () => {
         const sum = 91 * 4;
         let sv = 0;
-        const s = new Stock();
+        const s = new Deck();
         for (let i = 0; i < s.getNumberOfCards(); i++) {
             const c = s.getCard(i);
             if (c.type === CardType.color || c.type === CardType.trump) {
@@ -112,7 +112,7 @@ describe('Stock', () => {
         expect(sv).to.equal(sum);
     })
     it('Trump colors should be black and their values should sum to 91', () => {
-        const s = new Stock();
+        const s = new Deck();
         let sv = 0;
         for (let i = 0; i < s.getNumberOfCards(); i++) {
             const c = s.getCard(i);
