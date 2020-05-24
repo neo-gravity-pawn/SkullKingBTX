@@ -123,6 +123,26 @@ describe('Deck', () => {
             }
         }
         expect(sv).to.equal(91);
-
     })
+
+    it('should be possible to shuffle deck', () => {
+        const s = new Deck();
+        const c1 = s.getCard(10);
+        const c2 = s.getCard(20);
+        const c3 = s.getCard(30);
+        const c4 = s.getCard(40);
+        s.shuffle();
+        expect(s.getCard(10)).to.not.be.equal(c1);
+        expect(s.getCard(20)).to.not.be.equal(c2);
+        expect(s.getCard(40)).to.not.be.equal(c3);
+        expect(s.getCard(40)).to.not.be.equal(c4);
+    })
+    it('should be possible to remove cards from deck', () => {
+        const s = new Deck();
+        const c1 = s.removeCard(10);
+        const c2 = s.removeCard(20);
+        const c3 = s.removeCard(30);
+        expect(s.getNumberOfCards()).to.equal(63);
+    })
+
 })
