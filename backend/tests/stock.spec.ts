@@ -2,7 +2,7 @@ import { Stock } from '@core/stock';
 import { expect } from 'chai';
 import 'mocha';
 import { isMutableCard, MutableCard, MutableCardType } from '@core/mutableCard';
-import { CardType } from '@core/card';
+import { CardType, CardColor } from '@core/card';
 
 describe('Stock', () => {
 
@@ -110,5 +110,19 @@ describe('Stock', () => {
             }
         }
         expect(sv).to.equal(sum);
+    })
+    it('Trump colors should be black and their values should sum to 91', () => {
+        const s = new Stock();
+        let sv = 0;
+        for (let i = 0; i < s.getNumberOfCards(); i++) {
+            const c = s.getCard(i);
+            if (c.type === CardType.trump) {
+                sv += c.value;
+                expect(c.value).within(1, 13);
+                expect(c.color).to.be.equal(CardColor.black);
+            }
+        }
+        expect(sv).to.equal(91);
+
     })
 })
