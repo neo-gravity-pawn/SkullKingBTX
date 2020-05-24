@@ -1,5 +1,5 @@
 import { CardCollection } from '@core/cardCollection';
-import { MutableCard, MutableCardType } from './mutableCard';
+import { MutableCard } from './mutableCard';
 import { Card, CardColor, CardType } from "./card";
 
 export class Deck extends CardCollection {
@@ -29,7 +29,7 @@ export class Deck extends CardCollection {
             this.addCard(new Card({type: CardType.mermaid}));
         }
         this.addCard(new Card({type: CardType.skullking}));
-        this.addCard(new MutableCard(MutableCardType.scaryMary,
+        this.addCard(new MutableCard(CardType.scarymary,
             [new Card({type: CardType.pirate}), new Card({type: CardType.escape})]
         ));
     }

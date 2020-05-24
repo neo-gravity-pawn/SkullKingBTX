@@ -1,10 +1,10 @@
-import { MutableCardType, MutableCard } from '@core/mutableCard';
+import { MutableCard } from '@core/mutableCard';
 import { CardType, CardColor, Card } from '@core/card';
 import { CardCollection } from '@core/cardCollection';
 import { expect } from 'chai';
 import 'mocha';
 
-describe('Hand', () => {
+/*describe('Hand', () => {
     it('should be sortable', () => {
         const hand = new CardCollection();
         const cards = [
@@ -21,5 +21,12 @@ describe('Hand', () => {
             new MutableCard(MutableCardType.scaryMary, [new Card({type: CardType.escape}), new Card({type: CardType.pirate})]),
             new Card({type: CardType.escape})
         ]
+        cards.forEach( card => {
+            hand.addCard(card);
+        });
+        hand.sort();
+        expect(
+            hand.getCard(0) === cards[8]
+        ).to.be.true;
     })
-})
+})*/

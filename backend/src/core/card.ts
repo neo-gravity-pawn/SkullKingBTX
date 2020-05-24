@@ -4,7 +4,8 @@ export enum CardType {
     trump = 'TRUMP',
     mermaid = 'MERMAID',
     pirate = 'PIRATE',
-    skullking = 'SKULLKING'
+    skullking = 'SKULLKING',
+    scarymary = 'SCARYMARY'
 }
 
 export enum CardColor {

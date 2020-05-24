@@ -1,7 +1,7 @@
 import { Deck } from '@core/deck';
 import { expect } from 'chai';
 import 'mocha';
-import { isMutableCard, MutableCard, MutableCardType } from '@core/mutableCard';
+import { isMutableCard, MutableCard } from '@core/mutableCard';
 import { CardType, CardColor } from '@core/card';
 
 describe('Deck', () => {
@@ -35,7 +35,7 @@ describe('Deck', () => {
             const c = s.getCard(i);
             if (isMutableCard(c)) {
                 m++
-                expect((c as MutableCard).mutableType).to.equal(MutableCardType.scaryMary);
+                expect((c as MutableCard).mutableType).to.equal(CardType.scarymary);
             } else {
                 n++
             }
@@ -70,7 +70,7 @@ describe('Deck', () => {
         for (let i = 0; i < s.getNumberOfCards(); i++) {
             const c = s.getCard(i);
             if (isMutableCard(c)) {
-                if ((c as MutableCard).mutableType === MutableCardType.scaryMary) {
+                if ((c as MutableCard).mutableType === CardType.scarymary) {
                     sm++;
                 }
             } else {
