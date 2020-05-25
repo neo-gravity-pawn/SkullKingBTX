@@ -11,7 +11,6 @@ describe('CC (create cards shortcut helper)', () => {
         const p = cc('p');
         const s = cc('s');
         const t6 = cc('t6');
-        const sm = cc('x');
         expect([cr8.type, cr8.color, cr8.value]).to.eql([CardType.color, CardColor.red, 8]);
         expect([p.type, p.color, p.value]).to.eql([CardType.pirate, CardColor.none, -1]);
         expect([s.type, s.color, s.value]).to.eql([CardType.skullking, CardColor.none, -1]);
