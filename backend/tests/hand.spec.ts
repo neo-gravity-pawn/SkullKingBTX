@@ -23,7 +23,6 @@ describe('Hand', () => {
             new Card({type: CardType.escape}), //11
             new Card({type: CardType.trump, value: 2}), //12
             new Card({type: CardType.trump, value: 9}), //13
-
         ]
         cards.forEach( card => {
             hand.addCard(card);
