@@ -9,6 +9,7 @@ const c3 = new Card({type: CardType.trump, value: 3});
 const c4 = new Card({type: CardType.color, color: CardColor.blue, value: 4});
 const c5 = new Card({type: CardType.color, color: CardColor.red, value: 11});
 const c6 = new Card({type: CardType.color, color: CardColor.yellow, value: 1});
+const c7 = new Card({type: CardType.color, color: CardColor.blue, value: 7});
 
 describe ('Card Collection', () => {
 
@@ -79,5 +80,23 @@ describe ('Card Collection', () => {
             c5 === col.getCard(4) &&
             c6 === col.getCard(5)
         ).to.be.false;
+    });
+    it('should provide correct number of color cards', () => {
+        const col = new CardCollection();
+        col.addCard(c1);
+        col.addCard(c2);
+        col.addCard(c3);
+        col.addCard(c4);
+        col.addCard(c5);
+        col.addCard(c6);
+        expect(col.getNumberOfCards(CardColor.blue)).to.equal(2);
+        expect(col.getNumberOfCards(CardColor.red)).to.equal(1);
+        expect(col.getNumberOfCards(CardColor.yellow)).to.equal(1);
+        expect(col.getNumberOfCards(CardColor.black)).to.equal(1);
+        expect(col.getNumberOfCards(CardColor.none)).to.equal(1);
+        col.addCard(c7);
+        expect(col.getNumberOfCards(CardColor.blue)).to.equal(3);
+        col.removeCard(2);
+        expect(col.getNumberOfCards(CardColor.black)).to.equal(0);
     });
 });

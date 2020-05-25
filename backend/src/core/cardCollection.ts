@@ -14,12 +14,20 @@ const cardTypeOrder = [
 
 export class CardCollection {
     protected cards: Array<Card>;
+    private colorCount = {
+        [CardColor.red]: 0,
+        [CardColor.blue]: 0,
+        [CardColor.yellow]: 0,
+        [CardColor.black]: 0,
+        [CardColor.none]: 0
+    }
     constructor() {
         this.cards = new Array<Card>();
     }
 
-    public getNumberOfCards() {
-        return this.cards.length;
+    public getNumberOfCards(color?: CardColor) {
+        const nr = color ? this.colorCount[color] : this.cards.length
+        return nr;
     }
 
     public getCard(index: number) {
@@ -31,11 +39,13 @@ export class CardCollection {
 
     public addCard(card: Card) {
         this.cards.push(card);
+        this.colorCount[card.color]++;
     }
 
     public removeCard(index: number) {
-        const card = this.cards.splice(index, 1);
-        return card[0];
+        const card = this.cards.splice(index, 1)[0];
+        this.colorCount[card.color]--;
+        return card;
     }
 
     public shuffle() {
@@ -52,16 +62,6 @@ export class CardCollection {
             CardType.trump,
             CardType.color
         ]
-        const colorCount = {
-            [CardColor.red]: 0,
-            [CardColor.blue]: 0,
-            [CardColor.yellow]: 0,
-            [CardColor.black]: 0,
-            [CardColor.none]: 0
-        }
-        this.cards.forEach(card => {
-            colorCount[card.color] ++;
-        });
         
         const cards = this.cards.filter( a => valueCards.indexOf(a.type) === -1 );
         const vCards = this.cards.filter( a => valueCards.indexOf(a.type) !== -1);
@@ -78,7 +78,7 @@ export class CardCollection {
                     return b.value - a.value;
                 }
                 else {
-                    return colorCount[b.color] - colorCount[a.color];
+                    return this.colorCount[b.color] - this.colorCount[a.color];
                 }
             }
         })
