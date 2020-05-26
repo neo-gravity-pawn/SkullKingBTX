@@ -82,4 +82,10 @@ describe('Rules - getHighestCardInTrick', () => {
         let t = fillTrick('bob', 'p,cb4,s,cr9,p,cb5')
         expect(getHighestCardInTrickRule(t)).to.eql([2, 60]);
     })
+    it('should work with mermaid extra rule', () => {
+        let t = fillTrick('bob', 'p,cb4,s,cr9,m,p,cb5,m')
+        expect(getHighestCardInTrickRule(t)).to.eql([4, 50]);
+        t = fillTrick('bob', 'p,cb4,m,cr9,s,p,cb5,m')
+        expect(getHighestCardInTrickRule(t)).to.eql([2, 50]);
+    })
 })

@@ -36,32 +36,52 @@ export function getHighestCardInTrickRule(trick: Trick) : [number, number] {
         return [-1, 0];
     }
     let pirateCount = 0;
-
+    let mermaidIndex = -1;
+    let skullkingIndex = -1;
     let extraPoints = 0;
-    function updatePirateCount(card: Card) {
+    let mermaidTriggered = false;
+
+    function updateStates(card: Card, index: number) {
         if (card.type === CardType.pirate) {
             pirateCount++;
         }
+        if (card.type === CardType.mermaid && mermaidIndex === -1) {
+            mermaidIndex = index;
+        }
+        if (card.type === CardType.skullking) {
+            skullkingIndex = index;
+        }
     }
+
+    function setCardAsHighest(card: Card, index: number) {
+        currentHighestCard = card;
+        currentHighestCardIndex = index;
+    }
+
     let currentHighestCardIndex = 0;
     let currentHighestCard = trick.getCard(currentHighestCardIndex);
-    updatePirateCount(currentHighestCard);
+    updateStates(currentHighestCard, 0);
 
     for (let i = 1; i < trick.getNumberOfCards(); i++) {
         const card = trick.getCard(i);
-        updatePirateCount(card);
+        updateStates(card, i);
         if (currentHighestCard.type === card.type) {
             if (card.type === CardType.color || card.type === CardType.trump) {
                 if (card.color === currentHighestCard.color && card.value > currentHighestCard.value) {
-                    currentHighestCard = card;
-                    currentHighestCardIndex = i;
+                    setCardAsHighest(card, i);
                 }
             }
         } else {
-            if (cardOrder.indexOf(card.type) > cardOrder.indexOf(currentHighestCard.type)) {
-                currentHighestCard = card;
-                currentHighestCardIndex = i;
-
+            if ((cardOrder.indexOf(card.type) > cardOrder.indexOf(currentHighestCard.type)) || (card.type === CardType.mermaid && skullkingIndex !== -1)) {
+                if (!mermaidTriggered) {
+                    if ((card.type === CardType.skullking && mermaidIndex !== -1) || (card.type === CardType.mermaid && skullkingIndex !== -1)) {
+                        setCardAsHighest(trick.getCard(mermaidIndex), mermaidIndex);
+                        extraPoints = 50;
+                        mermaidTriggered = true;
+                    } else {
+                        setCardAsHighest(card, i);
+                    }
+                }
             }
         }
         if (currentHighestCard.type === CardType.skullking) {
