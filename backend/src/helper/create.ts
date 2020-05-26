@@ -1,3 +1,4 @@
+import { CardCollection } from '@core/cardCollection';
 import { MutableCard } from './../core/mutableCard';
 import { CardType, CardColor, Card } from '@core/card';
 export function cc(cardCode: string): Card {
@@ -42,4 +43,13 @@ export function cc(cardCode: string): Card {
         }
         return new Card({type, color, value});
     }
+}
+
+export function fillCollection(cardCodes: string) : CardCollection {
+    const col = new CardCollection();
+    const codes = cardCodes.split(',');
+    codes.forEach(code => {
+        col.addCard(cc(code));
+    })
+    return col;
 }

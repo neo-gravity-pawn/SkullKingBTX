@@ -3,7 +3,7 @@ import { MutableCard } from '@core/mutableCard';
 import { CardType, CardColor } from '@core/card';
 import { expect } from 'chai';
 import 'mocha';
-import {cc} from '@helper/create';
+import {cc, fillCollection} from '@helper/create';
 
 describe('CC (create cards shortcut helper)', () => {
     it('should create correct standard cards', () => {
@@ -24,5 +24,21 @@ describe('CC (create cards shortcut helper)', () => {
         sm.selectCard(1);
         expect([sm.type, sm.color, sm.value]).to.eql([CardType.escape, CardColor.none, -1]);
     })
+});
 
+describe('fillCollection', () => {
+    it('should add correct cards', () => {
+        const col = fillCollection('cr8,cr9,cy4,t4,p,s,x,e,m');
+        expect(col.getCard(0).conf).to.eql({type: CardType.color, color: CardColor.red, value:8});
+        expect(col.getCard(1).conf).to.eql({type: CardType.color, color: CardColor.red, value:9});
+        expect(col.getCard(2).conf).to.eql({type: CardType.color, color: CardColor.yellow, value:4});
+        expect(col.getCard(3).conf).to.eql({type: CardType.trump, color: CardColor.black, value:4});
+        expect(col.getCard(4).conf).to.eql({type: CardType.pirate, color: CardColor.none, value:-1});
+        expect(col.getCard(5).conf).to.eql({type: CardType.skullking, color: CardColor.none, value:-1});
+        expect(col.getCard(7).conf).to.eql({type: CardType.escape, color: CardColor.none, value:-1});
+        expect(col.getCard(8).conf).to.eql({type: CardType.mermaid, color: CardColor.none, value:-1});
+        expect((col.getCard(6) as MutableCard).mutableType).to.eql(CardType.scarymary);
+        // expect(col.getCard(6).conf).to.eql({type: CardType.scarymary, color: CardColor.none, value:-1});
+
+    })
 });
