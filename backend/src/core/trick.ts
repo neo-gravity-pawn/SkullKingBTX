@@ -14,4 +14,9 @@ export class Trick extends CardCollection {
     public getPlayerIdForCard(index: number) {
         return this.cardPlayerMap[index];
     }
+
+    public removeCard(index: number) : Card {
+        this.cardPlayerMap.splice(index, 1);
+        return super.removeCard(index);
+    }
 }
