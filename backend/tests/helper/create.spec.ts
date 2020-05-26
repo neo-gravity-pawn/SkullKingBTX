@@ -38,7 +38,5 @@ describe('fillCollection', () => {
         expect(col.getCard(7).conf).to.eql({type: CardType.escape, color: CardColor.none, value:-1});
         expect(col.getCard(8).conf).to.eql({type: CardType.mermaid, color: CardColor.none, value:-1});
         expect((col.getCard(6) as MutableCard).mutableType).to.eql(CardType.scarymary);
-        // expect(col.getCard(6).conf).to.eql({type: CardType.scarymary, color: CardColor.none, value:-1});
-
     })
 });
