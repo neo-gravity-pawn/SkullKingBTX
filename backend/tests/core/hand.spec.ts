@@ -1,13 +1,13 @@
 import { printCollection } from '@helper/output';
 import { MutableCard } from '@core/mutableCard';
 import { CardType, CardColor, Card } from '@core/card';
-import { CardCollection } from '@core/cardCollection';
+import { Hand } from '@core/hand';
 import { expect } from 'chai';
 import 'mocha';
 
 describe('Hand', () => {
     it('should be sortable', () => {
-        const hand = new CardCollection();
+        const hand = new Hand();
         const cards = [
             new Card({type: CardType.color, color: CardColor.blue, value: 8}), //0
             new Card({type: CardType.color, color: CardColor.red, value: 10}), //1
