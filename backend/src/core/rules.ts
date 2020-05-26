@@ -1,3 +1,4 @@
+import { printCard } from '@helper/output';
 import { Trick } from '@core/trick';
 import { Card, CardType } from './card';
 import { CardCollection } from '@core/cardCollection';
@@ -35,13 +36,20 @@ export function getHighestCardInTrickRule(trick: Trick) : [number, number] {
         return [-1, 0];
     }
     let pirateCount = 0;
-    let currentHighestCardIndex = 0;
-    let currentHighestCard = trick.getCard(currentHighestCardIndex);
-    for (let i = 1; i < trick.getNumberOfCards(); i++) {
-        const card = trick.getCard(i);
+
+    let extraPoints = 0;
+    function updatePirateCount(card: Card) {
         if (card.type === CardType.pirate) {
             pirateCount++;
         }
+    }
+    let currentHighestCardIndex = 0;
+    let currentHighestCard = trick.getCard(currentHighestCardIndex);
+    updatePirateCount(currentHighestCard);
+
+    for (let i = 1; i < trick.getNumberOfCards(); i++) {
+        const card = trick.getCard(i);
+        updatePirateCount(card);
         if (currentHighestCard.type === card.type) {
             if (card.type === CardType.color || card.type === CardType.trump) {
                 if (card.color === currentHighestCard.color && card.value > currentHighestCard.value) {
@@ -53,8 +61,12 @@ export function getHighestCardInTrickRule(trick: Trick) : [number, number] {
             if (cardOrder.indexOf(card.type) > cardOrder.indexOf(currentHighestCard.type)) {
                 currentHighestCard = card;
                 currentHighestCardIndex = i;
+
             }
         }
+        if (currentHighestCard.type === CardType.skullking) {
+            extraPoints = pirateCount * 30;
+        }
     }
-    return [currentHighestCardIndex, 0];
+    return [currentHighestCardIndex, extraPoints];
 }

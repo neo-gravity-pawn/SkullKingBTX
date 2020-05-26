@@ -70,12 +70,16 @@ describe('Rules - getHighestCardInTrick', () => {
         let t = fillTrick('bob', 'cr3,t1,cr9,p,t6,cb5,p')
         expect(getHighestCardInTrickRule(t)).to.eql([3, 0]);
         t = fillTrick('bob', 'cr3,s,cr9,p,t6,cb5,p')
-        expect(getHighestCardInTrickRule(t)).to.eql([1, 0]);
+        expect(getHighestCardInTrickRule(t)).to.eql([1, 60]);
     })
     it('should provide correct index for mermaid', () => {
         let t = fillTrick('bob', 'cr3,m,t1,cr9,t6,cb5')
         expect(getHighestCardInTrickRule(t)).to.eql([1, 0]);
         t = fillTrick('bob', 'cr3,m,t1,cr9,t6,cb5,p')
         expect(getHighestCardInTrickRule(t)).to.eql([6, 0]);
+    })
+    it('should provide correct index and points for skullking', () => {
+        let t = fillTrick('bob', 'p,cb4,s,cr9,p,cb5')
+        expect(getHighestCardInTrickRule(t)).to.eql([2, 60]);
     })
 })
