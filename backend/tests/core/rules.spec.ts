@@ -111,4 +111,20 @@ describe('Rules - getHighestCardInTrick', () => {
         t.addCard(c, 'bob');
         expect(getHighestCardInTrickRule(t)).to.eql([1, 0]);
     })
+    it('should provide correct player id', () => {
+        let t = fillTrick('');
+        t.addCard(cc('cr8'), 'A');
+        t.addCard(cc('cr13'), 'B');
+        expect(t.getPlayerIdForCard(getHighestCardInTrickRule(t)[0])).to.eql('B');
+        t.addCard(cc('cy3'), 'C');
+        expect(t.getPlayerIdForCard(getHighestCardInTrickRule(t)[0])).to.eql('B');
+        t.addCard(cc('m'), 'D');
+        expect(t.getPlayerIdForCard(getHighestCardInTrickRule(t)[0])).to.eql('D');
+        t.addCard(cc('e'), 'F');
+        expect(t.getPlayerIdForCard(getHighestCardInTrickRule(t)[0])).to.eql('D');
+        t.addCard(cc('p'), 'G');
+        expect(t.getPlayerIdForCard(getHighestCardInTrickRule(t)[0])).to.eql('G');
+        t.addCard(cc('s'), 'H');
+        expect(t.getPlayerIdForCard(getHighestCardInTrickRule(t)[0])).to.eql('D'); 
+    })
 })

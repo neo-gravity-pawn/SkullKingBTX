@@ -1,4 +1,3 @@
-import { printCard } from '@helper/output';
 import { Trick } from '@core/trick';
 import { Card, CardType } from './card';
 import { CardCollection } from '@core/cardCollection';
