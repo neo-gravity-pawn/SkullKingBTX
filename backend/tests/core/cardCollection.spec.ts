@@ -55,32 +55,7 @@ describe ('Card Collection', () => {
         }).to.throw();
     })
 
-    it('shuffling should lead to randomized card order', () => {
-        const col = new CardCollection();
-        col.addCard(c1);
-        col.addCard(c2);
-        col.addCard(c3);
-        col.addCard(c4);
-        col.addCard(c5);
-        col.addCard(c6);
-        expect(
-            c1 === col.getCard(0) &&
-            c2 === col.getCard(1) &&
-            c3 === col.getCard(2) &&
-            c4 === col.getCard(3) &&
-            c5 === col.getCard(4) &&
-            c6 === col.getCard(5)
-        ).to.be.true;
-        col.shuffle();
-        expect(
-            c1 === col.getCard(0) &&
-            c2 === col.getCard(1) &&
-            c3 === col.getCard(2) &&
-            c4 === col.getCard(3) &&
-            c5 === col.getCard(4) &&
-            c6 === col.getCard(5)
-        ).to.be.false;
-    });
+
     it('should provide correct number of color cards', () => {
         const col = new CardCollection();
         col.addCard(c1);
