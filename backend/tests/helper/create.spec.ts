@@ -39,4 +39,10 @@ describe('fillCollection', () => {
         expect(col.getCard(8).conf).to.eql({type: CardType.mermaid, color: CardColor.none, value:-1});
         expect((col.getCard(6) as MutableCard).mutableType).to.eql(CardType.scarymary);
     })
+    it('should create an empty collection, if no / empty string is provided', () => {
+        let col = fillCollection('');
+        expect(col.getNumberOfCards()).to.equal(0);
+        col = fillCollection();
+        expect(col.getNumberOfCards()).to.equal(0);
+    })
 });

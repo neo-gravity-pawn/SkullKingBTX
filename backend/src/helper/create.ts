@@ -45,11 +45,13 @@ export function cc(cardCode: string): Card {
     }
 }
 
-export function fillCollection(cardCodes: string) : CardCollection {
+export function fillCollection(cardCodes?: string) : CardCollection {
     const col = new CardCollection();
-    const codes = cardCodes.split(',');
+    const codes = cardCodes ? cardCodes.split(',') : [];
     codes.forEach(code => {
-        col.addCard(cc(code));
+        if (code !== '') {
+            col.addCard(cc(code));
+        }
     })
     return col;
 }
