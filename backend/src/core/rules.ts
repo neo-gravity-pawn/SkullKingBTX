@@ -2,7 +2,7 @@ import { printCard } from '@helper/output';
 import { Card, CardType } from './card';
 import { CardCollection } from '@core/cardCollection';
 
-export function canBeAddedToTrick(hand: CardCollection, cardIndex: number, trick: CardCollection): Boolean {
+export function canBeAddedToTrickRule(hand: CardCollection, cardIndex: number, trick: CardCollection): Boolean {
     const card = hand.getCard(cardIndex);
     if (card.type !== CardType.color && card.type !== CardType.trump) {
         return true;
