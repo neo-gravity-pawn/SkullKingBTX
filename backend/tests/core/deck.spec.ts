@@ -146,5 +146,4 @@ describe('Deck', () => {
         const c3 = s.removeCard(30);
         expect(s.getNumberOfCards()).to.equal(63);
     })
-
 })
