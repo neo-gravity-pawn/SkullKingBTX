@@ -22,7 +22,7 @@ export function canBeAddedToTrickRule(hand: CardCollection, cardIndex: number, t
     return true;
 }
 
-export function getHighestCardInTrickRule(trick: Trick) {
+export function getHighestCardInTrickRule(trick: Trick) : [number, number] {
     const cardOrder = [
         CardType.escape,
         CardType.color,
@@ -32,18 +32,29 @@ export function getHighestCardInTrickRule(trick: Trick) {
         CardType.skullking
     ]
     if (trick.getNumberOfCards() === 0) {
-        return -1;
+        return [-1, 0];
     }
+    let pirateCount = 0;
     let currentHighestCardIndex = 0;
     let currentHighestCard = trick.getCard(currentHighestCardIndex);
     for (let i = 1; i < trick.getNumberOfCards(); i++) {
         const card = trick.getCard(i);
-        if (currentHighestCard.type === CardType.color) {
-            if (card.color === currentHighestCard.color && card.value > currentHighestCard.value) {
+        if (card.type === CardType.pirate) {
+            pirateCount++;
+        }
+        if (currentHighestCard.type === card.type) {
+            if (card.type === CardType.color || card.type === CardType.trump) {
+                if (card.color === currentHighestCard.color && card.value > currentHighestCard.value) {
+                    currentHighestCard = card;
+                    currentHighestCardIndex = i;
+                }
+            }
+        } else {
+            if (cardOrder.indexOf(card.type) > cardOrder.indexOf(currentHighestCard.type)) {
                 currentHighestCard = card;
                 currentHighestCardIndex = i;
             }
         }
     }
-    return currentHighestCardIndex;
+    return [currentHighestCardIndex, 0];
 }

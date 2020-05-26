@@ -58,6 +58,24 @@ describe('Rules - canBeAddedToTrick', () => {
 describe('Rules - getHighestCardInTrick', () => {
     it('should provide correct index for pure color trick', () => {
         const t = fillTrick('bob', 'cr3,cy4,cr9,cb5')
-        expect(getHighestCardInTrickRule(t)).to.equal(2);
+        expect(getHighestCardInTrickRule(t)).to.eql([2, 0]);
+    })
+    it('should provide correct index for trump', () => {
+        let t = fillTrick('bob', 'cr3,t1,cr9,t6,cb5')
+        expect(getHighestCardInTrickRule(t)).to.eql([3, 0]);
+        t = fillTrick('bob', 'cr3,t1,cr9,t6,m,cb5')
+        expect(getHighestCardInTrickRule(t)).to.eql([4, 0]);
+    })
+    it('should provide correct index for pirate', () => {
+        let t = fillTrick('bob', 'cr3,t1,cr9,p,t6,cb5,p')
+        expect(getHighestCardInTrickRule(t)).to.eql([3, 0]);
+        t = fillTrick('bob', 'cr3,s,cr9,p,t6,cb5,p')
+        expect(getHighestCardInTrickRule(t)).to.eql([1, 0]);
+    })
+    it('should provide correct index for mermaid', () => {
+        let t = fillTrick('bob', 'cr3,m,t1,cr9,t6,cb5')
+        expect(getHighestCardInTrickRule(t)).to.eql([1, 0]);
+        t = fillTrick('bob', 'cr3,m,t1,cr9,t6,cb5,p')
+        expect(getHighestCardInTrickRule(t)).to.eql([6, 0]);
     })
 })
