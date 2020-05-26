@@ -18,7 +18,7 @@ export class CardCollection {
         return nr;
     }
 
-    public getCard(index: number) {
+    public getCard(index: number) : Card {
         if (index < 0 || index >= this.cards.length) {
             throw Error('Card collection can only provide cards within range [0, '+this.cards.length + ']');
         }
