@@ -1,6 +1,6 @@
+import { MutableCard } from '@core/mutableCard';
 import { expect } from 'chai';
 import 'mocha';
-import { printCard } from '@helper/output';
 import { CardCollection } from '@core/cardCollection';
 import { canBeAddedToTrickRule, getHighestCardInTrickRule } from '@core/rules.ts';
 import { cc, fillCollection, fillTrick } from '@helper/create';
@@ -57,35 +57,58 @@ describe('Rules - canBeAddedToTrick', () => {
 
 describe('Rules - getHighestCardInTrick', () => {
     it('should provide correct index for pure color trick', () => {
-        const t = fillTrick('bob', 'cr3,cy4,cr9,cb5')
+        const t = fillTrick('bob', 'cr3,cy4,cr9,cb5');
         expect(getHighestCardInTrickRule(t)).to.eql([2, 0]);
     })
     it('should provide correct index for trump', () => {
-        let t = fillTrick('bob', 'cr3,t1,cr9,t6,cb5')
+        let t = fillTrick('bob', 'cr3,t1,cr9,t6,cb5');
         expect(getHighestCardInTrickRule(t)).to.eql([3, 0]);
-        t = fillTrick('bob', 'cr3,t1,cr9,t6,m,cb5')
+        t = fillTrick('bob', 'cr3,t1,cr9,t6,m,cb5');
         expect(getHighestCardInTrickRule(t)).to.eql([4, 0]);
     })
     it('should provide correct index for pirate', () => {
         let t = fillTrick('bob', 'cr3,t1,cr9,p,t6,cb5,p')
         expect(getHighestCardInTrickRule(t)).to.eql([3, 0]);
-        t = fillTrick('bob', 'cr3,s,cr9,p,t6,cb5,p')
+        t = fillTrick('bob', 'cr3,s,cr9,p,t6,cb5,p');
         expect(getHighestCardInTrickRule(t)).to.eql([1, 60]);
     })
     it('should provide correct index for mermaid', () => {
-        let t = fillTrick('bob', 'cr3,m,t1,cr9,t6,cb5')
+        let t = fillTrick('bob', 'cr3,m,t1,cr9,m,t6,cb5')
         expect(getHighestCardInTrickRule(t)).to.eql([1, 0]);
-        t = fillTrick('bob', 'cr3,m,t1,cr9,t6,cb5,p')
+        t = fillTrick('bob', 'cr3,m,t1,cr9,t6,cb5,p');
         expect(getHighestCardInTrickRule(t)).to.eql([6, 0]);
     })
     it('should provide correct index and points for skullking', () => {
-        let t = fillTrick('bob', 'p,cb4,s,cr9,p,cb5')
+        let t = fillTrick('bob', 'p,cb4,s,cr9,p,cb5');
         expect(getHighestCardInTrickRule(t)).to.eql([2, 60]);
     })
     it('should work with mermaid extra rule', () => {
-        let t = fillTrick('bob', 'p,cb4,s,cr9,m,p,cb5,m')
+        let t = fillTrick('bob', 'p,cb4,s,cr9,m,p,cb5,m');
         expect(getHighestCardInTrickRule(t)).to.eql([4, 50]);
-        t = fillTrick('bob', 'p,cb4,m,cr9,s,p,cb5,m')
+        t = fillTrick('bob', 'p,cb4,m,cr9,s,p,cb5,m');
         expect(getHighestCardInTrickRule(t)).to.eql([2, 50]);
+    })
+    it('should provide correct index for escape', () => {
+        let t = fillTrick('bob', 'cy4,cb3,e');
+        expect(getHighestCardInTrickRule(t)).to.eql([0, 0]);
+        t = fillTrick('bob', 'e,e,e,e');
+        expect(getHighestCardInTrickRule(t)).to.eql([0, 0]);
+        t = fillTrick('bob', 'e,e,cy1,e');
+        expect(getHighestCardInTrickRule(t)).to.eql([2, 0]);
+    })
+    it('should provide correct index for scary mary', () => {
+        let t = fillTrick('bob', 't8,cb13,m');
+        const c = cc('x');
+        (c as MutableCard).selectCard(1);
+        t.addCard(c, 'bob');
+        expect(getHighestCardInTrickRule(t)).to.eql([2, 0]);
+        t = fillTrick('bob', 't8,cb13,m');
+        (c as MutableCard).selectCard(0);
+        t.addCard(c, 'bob');
+        expect(getHighestCardInTrickRule(t)).to.eql([3, 0]);
+        t = fillTrick('bob', 't8,p,cb13,m');
+        (c as MutableCard).selectCard(0);
+        t.addCard(c, 'bob');
+        expect(getHighestCardInTrickRule(t)).to.eql([1, 0]);
     })
 })
