@@ -1,3 +1,4 @@
+import { Trick } from '@core/trick';
 import { CardCollection } from '@core/cardCollection';
 import { MutableCard } from './../core/mutableCard';
 import { CardType, CardColor, Card } from '@core/card';
@@ -51,6 +52,17 @@ export function fillCollection(cardCodes?: string) : CardCollection {
     codes.forEach(code => {
         if (code !== '') {
             col.addCard(cc(code));
+        }
+    })
+    return col;
+}
+
+export function fillTrick(playerId: string, cardCodes?: string) : Trick {
+    const col = new Trick();
+    const codes = cardCodes ? cardCodes.split(',') : [];
+    codes.forEach(code => {
+        if (code !== '') {
+            col.addCard(cc(code), playerId);
         }
     })
     return col;
