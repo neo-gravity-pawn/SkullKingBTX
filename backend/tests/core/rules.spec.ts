@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import 'mocha';
 import { printCard } from '@helper/output';
 import { CardCollection } from '@core/cardCollection';
-import { canBeAddedToTrickRule } from '@core/rules.ts';
+import { canBeAddedToTrickRule, getHighestCardInTrickRule } from '@core/rules.ts';
 import { cc, fillCollection, fillTrick } from '@helper/create';
 import { Trick } from '@core/trick';
 
@@ -52,5 +52,12 @@ describe('Rules - canBeAddedToTrick', () => {
         expect(canBeAddedToTrickRule(hand, 3, trick)).to.be.true;
         expect(canBeAddedToTrickRule(hand, 4, trick)).to.be.true;
         expect(canBeAddedToTrickRule(hand, 5, trick)).to.be.true;
+    })
+})
+
+describe('Rules - getHighestCardInTrick', () => {
+    it('should provide correct index for pure color trick', () => {
+        const t = fillTrick('bob', 'cr3,cy4,cr9,cb5')
+        expect(getHighestCardInTrickRule(t)).to.equal(2);
     })
 })
