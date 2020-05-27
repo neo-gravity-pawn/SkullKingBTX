@@ -1,9 +1,12 @@
+import { CardCollection } from './../../src/core/cardCollection';
+import { Card } from './../../src/core/card';
 import { isMutableCard } from '@core/mutableCard';
 import { MutableCard } from '@core/mutableCard';
 import { CardType, CardColor } from '@core/card';
 import { expect } from 'chai';
 import 'mocha';
-import {cc, fillCollection, fillTrick} from '@helper/create';
+import {cc, fillCollection} from '@helper/create';
+import { Trick } from '@core/trick';
 
 describe('CC (create cards shortcut helper)', () => {
     it('should create correct standard cards', () => {
@@ -27,8 +30,11 @@ describe('CC (create cards shortcut helper)', () => {
 });
 
 describe('fillCollection', () => {
+    it('should create CardCollection instance', () => {
+        expect(fillCollection(CardCollection) instanceof CardCollection).to.be.true;
+    })
     it('should add correct cards', () => {
-        const col = fillCollection('cr8,cr9,cy4,t4,p,s,x,e,m');
+        const col = fillCollection(CardCollection, {cardCodes: 'cr8,cr9,cy4,t4,p,s,x,e,m'});
         expect(col.getCard(0).conf).to.eql({type: CardType.color, color: CardColor.red, value:8});
         expect(col.getCard(1).conf).to.eql({type: CardType.color, color: CardColor.red, value:9});
         expect(col.getCard(2).conf).to.eql({type: CardType.color, color: CardColor.yellow, value:4});
@@ -40,16 +46,19 @@ describe('fillCollection', () => {
         expect((col.getCard(6) as MutableCard).mutableType).to.eql(CardType.scarymary);
     })
     it('should create an empty collection, if no / empty string is provided', () => {
-        let col = fillCollection('');
+        let col = fillCollection(CardCollection, {cardCodes: ''});
         expect(col.getNumberOfCards()).to.equal(0);
-        col = fillCollection();
+        col = fillCollection(CardCollection);
         expect(col.getNumberOfCards()).to.equal(0);
     })
 });
 
 describe('fillTrick', () => {
+    it('should create Trick instance', () => {
+        expect(fillCollection(Trick) instanceof Trick).to.be.true;
+    })
     it('should add correct cards', () => {
-        const col = fillTrick('bob', 'cr8,cr9,cy4,t4,p,s,x,e,m');
+        const col = fillCollection(Trick, {playerId: 'bob', cardCodes: 'cr8,cr9,cy4,t4,p,s,x,e,m'});
         expect(col.getCard(0).conf).to.eql({type: CardType.color, color: CardColor.red, value:8});
         expect(col.getCard(1).conf).to.eql({type: CardType.color, color: CardColor.red, value:9});
         expect(col.getCard(2).conf).to.eql({type: CardType.color, color: CardColor.yellow, value:4});

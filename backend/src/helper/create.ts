@@ -46,23 +46,23 @@ export function cc(cardCode: string): Card {
     }
 }
 
-export function fillCollection(cardCodes?: string) : CardCollection {
-    const col = new CardCollection();
-    const codes = cardCodes ? cardCodes.split(',') : [];
-    codes.forEach(code => {
-        if (code !== '') {
-            col.addCard(cc(code));
-        }
-    })
-    return col;
+export interface IFillOptions {
+    playerId?: string,
+    cardCodes?: string,
 }
 
-export function fillTrick(playerId: string, cardCodes?: string) : Trick {
-    const col = new Trick();
-    const codes = cardCodes ? cardCodes.split(',') : [];
+export interface ICardAddable {
+    addCard: any
+}
+
+export function fillCollection<T extends ICardAddable>(c : (new() => T), options?: IFillOptions) : T {
+    const col = new c();
+    const codes = options ? (options.cardCodes ? options.cardCodes.split(',') : []) : [];
     codes.forEach(code => {
         if (code !== '') {
-            col.addCard(cc(code), playerId);
+            if (options) {
+                options.playerId ? col.addCard(cc(code), options.playerId) : col.addCard(cc(code));
+            }
         }
     })
     return col;
