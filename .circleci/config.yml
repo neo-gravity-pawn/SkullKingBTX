@@ -1,0 +1,20 @@
+version: 2.1
+orbs:
+  node: circleci/node@1.1.6
+jobs:
+  backend-build-and-test:
+    resource_class: small
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - node/with-cache:
+          cache-key: ~/project/backend/package.json
+          dir: ~/project/backend/node_modules
+          steps:
+            - run: cd backend && npm install
+            - run: cd backend && npm test
+workflows:
+    backend:
+      jobs:
+        - backend-build-and-test
