@@ -5,6 +5,7 @@ import { expect } from 'chai';
 
 const p1 = new Player('Bob');
 const p2 = new Player('Anna');
+const p3 = new Player('Heinz');
 
 function initGame(players: Array<Player>) : Game {
     const g = new Game();
@@ -17,8 +18,12 @@ function initGame(players: Array<Player>) : Game {
 describe('Game', () => {
     it('should have players', () => {
         const g = new Game();
-        g.addPlayer(new Player('Bob'));
+        g.addPlayer(p1);
         expect(g.numberOfPlayers).to.equal(1);
+        g.addPlayer(p2);
+        expect(g.numberOfPlayers).to.equal(2);
+        expect(g.registeredPlayers).to.eql([p1, p2]);
+
     })
     it('should be startable if at last two players are added', () => {
         const g = new Game();
@@ -44,11 +49,36 @@ describe('Game', () => {
         }
         expect(counter[p1.name] > 0 && counter[p2.name] > 0 && counter[p1.name] + counter[p2.name] === 10).to.be.true;
     }),
-    it('game should start with round 1 and melding phase', () => {
+    it('game should start with round 1 and melding phase', (done) => {
+        const g = initGame([p1, p2]);
+        const s = g.phase$.subscribe((p: GamePhase) => {
+            expect(p).to.equal(GamePhase.melding);
+            expect(g.currentRound).to.equal(1);
+            s.unsubscribe();
+            done();
+        })
+        g.start();
+    })
+    it('during melding phase players should be able to meld', () => {
         const g = initGame([p1, p2]);
         g.start();
-        expect(g.currentPhase).to.equal(GamePhase.melding);
-        expect(g.currentRound).to.equal(1);
-
+        expect( () => {g.meld(p3, 1)}).to.throw();
+        expect( () => {g.meld(p1, 2)}).to.throw();
+        expect( () => {g.meld(p1, 1)}).not.to.throw();
+        expect( () => {g.meld(p1, 1)}).to.throw();
+        expect( () => {g.meld(p2, 0)}).not.to.throw();
+        expect( g.getMelding(p1)).to.equal(1);
+        expect( g.getMelding(p2)).to.equal(0);        
+    })
+    it('if all players have melded, the phase should switch to playing', (done) => {
+        const g = initGame([p1, p2]);
+        g.start();
+        const s = g.phase$.subscribe((p: GamePhase) => {
+            expect(p).to.equal(GamePhase.playing);
+            s.unsubscribe();
+            done();
+        })
+        g.meld(p1, 0);
+        g.meld(p2, 1);
     })
 });
