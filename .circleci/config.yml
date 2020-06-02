@@ -17,9 +17,4 @@ jobs:
 workflows:
     backend:
       jobs:
-        - backend-build-and-test:
-            filters:
-              branches:
-                only:
-                  - master
-                  - development
+        - backend-build-and-test
