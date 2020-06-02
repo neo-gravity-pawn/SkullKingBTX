@@ -3,6 +3,7 @@ orbs:
   node: circleci/node@1.1.6
 jobs:
   backend-build-and-test:
+    resource_class: small
     executor:
       name: node/default
     steps:
