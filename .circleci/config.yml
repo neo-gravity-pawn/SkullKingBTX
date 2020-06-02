@@ -5,11 +5,10 @@ jobs:
   backend-build-and-test:
     executor:
       name: node/default
-    parameters:
-      app-dir: ~/project/backend
     steps:
       - checkout
       - node/with-cache:
+          dir: ~/project/backend
           steps:
             - run: npm install
             - run: npm test
