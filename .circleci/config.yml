@@ -7,7 +7,7 @@ jobs:
       name: node/default
     steps:
       - checkout
-      - cd backend
+      - run: cd backend
       - node/with-cache:
           steps:
             - run: npm install
