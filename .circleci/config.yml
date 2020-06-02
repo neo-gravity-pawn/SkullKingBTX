@@ -11,7 +11,7 @@ jobs:
           cache-key: ~/project/backend/package.json
           dir: ~/project/backend/node_modules
           steps:
-            - run: cd backed && npm install
+            - run: cd backend && npm install
             - run: cd packend && npm test
 workflows:
     backend:
