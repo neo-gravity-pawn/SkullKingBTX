@@ -12,7 +12,7 @@ jobs:
           dir: ~/project/backend/node_modules
           steps:
             - run: cd backend && npm install
-            - run: cd packend && npm test
+            - run: cd backend && npm test
 workflows:
     backend:
       jobs:
