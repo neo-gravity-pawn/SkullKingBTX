@@ -19,7 +19,7 @@ export class Game {
         return this.players.length;
     }
 
-    get activePlayer() {
+    get activePlayer() : Player {
         return this.players[this.currentPlayerIndex];
 
     }

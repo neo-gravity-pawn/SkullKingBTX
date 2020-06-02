@@ -29,8 +29,15 @@ describe('Game', () => {
         const p2 = new Player('Anna');
         g.addPlayer(p1);
         g.addPlayer(p2);
-        g.start();
-        expect(g.activePlayer === p1 || g.activePlayer === p2).to.be.true;
+        const counter = {
+            [p1.name] : 0,
+            [p2.name]: 0
+        };
+        for (let i = 0; i < 10; i++) {
+            g.start();
+            counter[g.activePlayer.name]++;
+        }
+        expect(counter[p1.name] > 0 && counter[p2.name] && counter[p1.name] + counter[p2.name] === 10).to.be.true;
     })
 
 });
