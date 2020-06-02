@@ -7,10 +7,11 @@ jobs:
       name: node/default
     steps:
       - checkout
+      - cd backend
       - node/with-cache:
           steps:
-            - run: cd backend && npm install
-            - run: cd backend && npm test
+            - run: npm install
+            - run: npm test
 workflows:
     backend:
       jobs:
