@@ -1,7 +1,14 @@
 import { Player } from "@core/player";
 
+export enum GamePhase {
+    melding = 'MELDING',
+    playing = 'PLAYING'
+}
+
 export class Game {
     players = Array<Player>();
+    phase = GamePhase.melding;
+    round = 1;
     currentPlayerIndex = -1;
     addPlayer(player: Player) {
        this.players.push(player); 
@@ -21,7 +28,14 @@ export class Game {
 
     get activePlayer() : Player {
         return this.players[this.currentPlayerIndex];
+    }
 
+    get currentPhase() : GamePhase {
+        return this.phase;
+    }
+
+    get currentRound() : number {
+        return this.round;
     }
 
 }
