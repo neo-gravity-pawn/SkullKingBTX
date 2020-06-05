@@ -1,7 +1,8 @@
 import 'mocha';
-import { Game, GamePhase } from '@core/game';
+import { Game, GamePhase, IGamePhaseInfo } from '@core/game';
 import { Player } from '@core/player';
 import { expect } from 'chai';
+import { filter } from 'rxjs/operators';
 
 const p1 = new Player('Bob');
 const p2 = new Player('Anna');
@@ -23,8 +24,8 @@ describe('Game', () => {
         g.addPlayer(p2);
         expect(g.numberOfPlayers).to.equal(2);
         expect(g.registeredPlayers).to.eql([p1, p2]);
-
     })
+
     it('should be startable if at last two players are added', () => {
         const g = new Game();
         g.addPlayer(new Player('Bob'));
@@ -37,6 +38,7 @@ describe('Game', () => {
             g.start()
         }).not.to.throw();  
     })
+
     it('should initially provide a random start player', () => {
         const g = initGame([p1, p2]);
         const counter = {
@@ -48,17 +50,20 @@ describe('Game', () => {
             counter[g.activePlayer.name]++;
         }
         expect(counter[p1.name] > 0 && counter[p2.name] > 0 && counter[p1.name] + counter[p2.name] === 10).to.be.true;
-    }),
+    })
+
     it('game should start with round 1 and melding phase', (done) => {
         const g = initGame([p1, p2]);
-        const s = g.phase$.subscribe((p: GamePhase) => {
-            expect(p).to.equal(GamePhase.melding);
+        const s = g.meldPhase$.subscribe((g2: Game) => {
+            expect(g2).to.equal(g);
             expect(g.currentRound).to.equal(1);
             s.unsubscribe();
             done();
         })
         g.start();
     })
+
+
     it('during melding phase players should be able to meld', () => {
         const g = initGame([p1, p2]);
         g.start();
@@ -70,15 +75,18 @@ describe('Game', () => {
         expect( g.getMelding(p1)).to.equal(1);
         expect( g.getMelding(p2)).to.equal(0);        
     })
+    
     it('if all players have melded, the phase should switch to playing', (done) => {
         const g = initGame([p1, p2]);
         g.start();
-        const s = g.phase$.subscribe((p: GamePhase) => {
-            expect(p).to.equal(GamePhase.playing);
+        const s = g.playPhase$.subscribe( _ => {
             s.unsubscribe();
             done();
         })
         g.meld(p1, 0);
         g.meld(p2, 1);
     })
+
+    // it('players should have 1 card in first round', () => {
+
 });
