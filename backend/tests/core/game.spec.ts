@@ -63,6 +63,17 @@ describe('Game', () => {
         g.start();
     })
 
+    it('all players should have 1 card initially', (done) => {
+        const g = initGame([p1, p2]);
+        const s = g.meldPhase$.subscribe((g2: Game) => {
+            expect(p1.hand.getNumberOfCards()).to.equal(1);
+            expect(p2.hand.getNumberOfCards()).to.equal(1);
+            s.unsubscribe();
+            done();
+        })
+        g.start();
+    })
+
 
     it('during melding phase players should be able to meld', () => {
         const g = initGame([p1, p2]);
@@ -86,7 +97,5 @@ describe('Game', () => {
         g.meld(p1, 0);
         g.meld(p2, 1);
     })
-
-    // it('players should have 1 card in first round', () => {
 
 });

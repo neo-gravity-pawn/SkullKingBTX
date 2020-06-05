@@ -1,7 +1,10 @@
-import { Trick } from './trick';
+import { Card } from './card';
+import { Trick } from '@core/trick';
 import { Player } from "@core/player";
 import { Subject, Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
+import { Deck } from '@core/deck';
+import { Hand } from './hand';
 
 export enum GamePhase {
     melding = 'MELDING',
@@ -16,6 +19,7 @@ export interface IGamePhaseInfo {
 export class Game {
     players = Array<Player>();
     trick = new Trick();
+    deck = new Deck();
     round = 1;
     currentPlayerIndex = -1;
     currentStartingPlayerIndex = -1;
@@ -84,7 +88,10 @@ export class Game {
     }
 
     private initMelding() {
+        this.deck = new Deck();
+        this.deck.shuffle();
         this.meldings[this.round] = new Array<{player: Player, nrOfTricks: number}>();
+        this.setupPlayers();
         this.emitPhase(GamePhase.melding);
     }
 
@@ -99,6 +106,16 @@ export class Game {
 
     private initPlaying() {
         this.selectNextStartingPlayer();
+    }
+    private setupPlayers() {
+        this.players.forEach( (p: Player) => {
+            p.hand = new Hand();
+            for (let i = 0; i < this.round; i++) {
+                const c: Card = this.deck.removeCard(0);
+                p.hand.addCard(c);
+            }
+        })
+
     }
 
 }
