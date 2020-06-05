@@ -1,3 +1,4 @@
+import { NotActivePlayerError } from './error';
 import { Card } from './card';
 import { Trick } from '@core/trick';
 import { Player } from "@core/player";
@@ -65,8 +66,15 @@ export class Game {
         }
     }
 
+    public play(player: Player, cardIndex: number) {
+        if (player !== this.activePlayer) {
+            throw new NotActivePlayerError(player, this.activePlayer);
+        }
+    }
+
     get numberOfPlayers() {
         return this.players.length;
+
     }
 
     get registeredPlayers() {

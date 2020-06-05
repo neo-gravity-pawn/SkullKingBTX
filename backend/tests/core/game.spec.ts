@@ -1,8 +1,9 @@
+import { NotActivePlayerError } from '@core/error';
+import { printCollection } from '@helper/output';
 import 'mocha';
-import { Game, GamePhase, IGamePhaseInfo } from '@core/game';
+import { Game } from '@core/game';
 import { Player } from '@core/player';
 import { expect } from 'chai';
-import { filter } from 'rxjs/operators';
 
 const p1 = new Player('Bob');
 const p2 = new Player('Anna');
@@ -65,7 +66,7 @@ describe('Game', () => {
 
     it('all players should have 1 card initially', (done) => {
         const g = initGame([p1, p2]);
-        const s = g.meldPhase$.subscribe((g2: Game) => {
+        const s = g.meldPhase$.subscribe( _ => {
             expect(p1.hand.getNumberOfCards()).to.equal(1);
             expect(p2.hand.getNumberOfCards()).to.equal(1);
             s.unsubscribe();
@@ -92,6 +93,23 @@ describe('Game', () => {
         g.start();
         const s = g.playPhase$.subscribe( _ => {
             s.unsubscribe();
+            done();
+        })
+        g.meld(p1, 0);
+        g.meld(p2, 1);
+    })
+
+    it('only the active player should be allowed to play valid card', (done) => {
+        const g = initGame([p1, p2]);
+        let naPlayer: Player;
+        let aPlayer: Player;
+        g.start();
+        const s = g.playPhase$.subscribe( _ => {
+            s.unsubscribe();
+            [naPlayer, aPlayer] = p1 === g.activePlayer ? [p2, p1] : [p1, p2];
+            expect(() => {
+                g.play(naPlayer,0);
+            }).to.throw(NotActivePlayerError);
             done();
         })
         g.meld(p1, 0);
