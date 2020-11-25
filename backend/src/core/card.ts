@@ -48,6 +48,7 @@ export class Card {
          this.configuration = {...this.configuration, ...configuration};
          this.checkValue();
          this.checkColor();
+         this.setColor();
     };
 
     private checkValue() {
@@ -69,12 +70,18 @@ export class Card {
                 throw Error('Color does not fit to standard color card');
             }
         }
-        else if (this.configuration.type === CardType.trump) {
-            this.configuration.color = CardColor.black;
-        } else {
-            this.configuration.color = CardColor.none;
+    }
+
+    private setColor() {
+        if (this.configuration.type !== CardType.color) {
+            if (this.configuration.type === CardType.trump) {
+                this.configuration.color = CardColor.black;
+            } else {
+                this.configuration.color = CardColor.none;
+            }
         }
     }
+
     get type(): CardType {
         return this.configuration.type;
     }
