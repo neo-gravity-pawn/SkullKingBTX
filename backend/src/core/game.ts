@@ -1,4 +1,4 @@
-import { NotActivePlayerError } from './error';
+import { EstimateOutsideRangeError, NotActivePlayerError, NotEnougPlayersError, PlayerHasAlreadyEstimatedError, PlayerNotRegisteredError } from './error';
 import { Card } from './card';
 import { Trick } from '@core/trick';
 import { Player } from "@core/player";
@@ -24,7 +24,7 @@ export class Game {
     round = 1;
     currentPlayerIndex = -1;
     currentStartingPlayerIndex = -1;
-    estimates = new Array<Array<{player: Player, nrOfTricks: number}>>();
+    estimates = new Array<Array<{player: Player, numberOfTricks: number}>>();
     addPlayer(player: Player) {
        this.players.push(player); 
     }
@@ -41,7 +41,7 @@ export class Game {
     
     public start() {
         if (this.numberOfPlayers < 2) {
-            throw(`Not enough players (at least 2) to start game. Current number: ${this.numberOfPlayers}`);
+            throw new NotEnougPlayersError(this.numberOfPlayers);
         }
         this.currentStartingPlayerIndex = Math.floor(Math.random() * this.numberOfPlayers);
         this.currentPlayerIndex = this.currentStartingPlayerIndex;
@@ -49,17 +49,17 @@ export class Game {
     }
 
 
-    public estimate(player : Player, nrOfTricks: number) {
+    public estimate(player : Player, numberOfTricks: number) {
         if (this.players.indexOf(player) === -1) {
-            throw(`${player.name} is not registered as player`);
+            throw new PlayerNotRegisteredError(player);
         }
-        if (nrOfTricks > this.round || nrOfTricks < 0) {
-            throw(`Estimated tricks must be in [0, ${this.round}], given: ${nrOfTricks}`);
+        if (numberOfTricks > this.round || numberOfTricks < 0) {
+            throw new EstimateOutsideRangeError(this.round, numberOfTricks);
         }
         if (this.estimates[this.round].filter( v => v.player === player).length !== 0) {
-            throw(`${player.name} has already estimated for this round`);
+            throw new PlayerHasAlreadyEstimatedError(player);
         }
-        this.estimates[this.round].push({player, nrOfTricks});
+        this.estimates[this.round].push({player, numberOfTricks});
         if (this.estimates[this.round].length === this.players.length) {
             this.emitPhase(GamePhase.playing);
             this.initPlaying();
@@ -92,13 +92,13 @@ export class Game {
     getEstimate(player: Player) {
         return this.estimates[this.round]
         .filter( v => v.player === player)
-        .map(v => v.nrOfTricks)[0];
+        .map(v => v.numberOfTricks)[0];
     }
 
     private initEstimating() {
         this.deck = new Deck();
         this.deck.shuffle();
-        this.estimates[this.round] = new Array<{player: Player, nrOfTricks: number}>();
+        this.estimates[this.round] = new Array<{player: Player, numberOfTricks: number}>();
         this.setupPlayers();
         this.emitPhase(GamePhase.estimating);
     }

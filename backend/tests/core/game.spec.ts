@@ -1,4 +1,10 @@
-import { NotActivePlayerError } from '@core/error';
+import { 
+    NotActivePlayerError,
+    NotEnougPlayersError,
+    PlayerNotRegisteredError,
+    EstimateOutsideRangeError,
+    PlayerHasAlreadyEstimatedError
+} from '@core/error';
 import 'mocha';
 import { Game } from '@core/game';
 import { Player } from '@core/player';
@@ -31,7 +37,7 @@ describe('Game', () => {
         g.addPlayer(new Player('Bob'));
         expect(() => {
             g.start()
-        }).to.throw();
+        }).to.throw(NotEnougPlayersError);
         g.addPlayer(new Player('Anna'));
         expect(g.numberOfPlayers).to.equal(2);
         expect(() => {
@@ -75,13 +81,13 @@ describe('Game', () => {
     })
 
 
-    it('during estimating phase players should be able to estimate', () => {
+    it('during estimating phase registered players should be able to estimate once', () => {
         const g = initGame([p1, p2]);
         g.start();
-        expect( () => {g.estimate(p3, 1)}).to.throw();
-        expect( () => {g.estimate(p1, 2)}).to.throw();
+        expect( () => {g.estimate(p3, 1)}).to.throw(PlayerNotRegisteredError);
+        expect( () => {g.estimate(p1, 2)}).to.throw(EstimateOutsideRangeError);
         expect( () => {g.estimate(p1, 1)}).not.to.throw();
-        expect( () => {g.estimate(p1, 1)}).to.throw();
+        expect( () => {g.estimate(p1, 1)}).to.throw(PlayerHasAlreadyEstimatedError);
         expect( () => {g.estimate(p2, 0)}).not.to.throw();
         expect( g.getEstimate(p1)).to.equal(1);
         expect( g.getEstimate(p2)).to.equal(0);        
