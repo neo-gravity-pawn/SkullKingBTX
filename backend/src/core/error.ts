@@ -1,4 +1,5 @@
-import { Player } from "./player";
+import { Player } from './player';
+import { CardType, CardColor } from './card';
 
 class BaseError extends Error {
     constructor(message: string) {
@@ -40,4 +41,16 @@ export class PlayerHasAlreadyEstimatedError extends BaseError {
     constructor(private player: Player) {
         super(`${player.name} has already estimated for this round`);
     }  
+}
+
+export class CardValueOutsideRangeError extends BaseError {
+    constructor(type: CardType, range: Array<number>, value: number) {
+        super(`${type} card must have value within ${range} but has ${value}`)
+    }
+}
+
+export class InvalidColorCardError extends BaseError {
+    constructor(type: CardType, color: CardColor) {
+        super(`${type} card can not have color ${color}`);
+    }
 }

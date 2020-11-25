@@ -1,3 +1,4 @@
+import { CardValueOutsideRangeError, InvalidColorCardError } from '@core/error';
 import { Card, CardType, CardColor } from '@core/card';
 import { expect } from 'chai';
 import 'mocha';
@@ -38,7 +39,7 @@ describe('Card', () => {
         }).to.throw();
         expect( () => {
             const c = new Card({type: CardType.color, value: 10, color: CardColor.black});
-        }).to.throw();
+        }).to.throw(InvalidColorCardError);
     });
 
     it('Trump cards should be black', () => {
@@ -54,12 +55,12 @@ describe('Card', () => {
     it('Wrong values should lead to error', () => {
         expect( () => {
             const c = new Card({type: CardType.pirate, value: 10});
-        }).to.throw();
+        }).to.throw(CardValueOutsideRangeError);
         expect( () => {
             const c = new Card({type: CardType.trump, value: 14});
-        }).to.throw();
+        }).to.throw(CardValueOutsideRangeError);
         expect( () => {
             const c = new Card({type: CardType.color, value: -1});
-        }).to.throw();
+        }).to.throw(CardValueOutsideRangeError);
     });
 });
