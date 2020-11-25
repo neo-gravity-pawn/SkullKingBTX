@@ -8,7 +8,7 @@ import { Deck } from '@core/deck';
 import { Hand } from './hand';
 
 export enum GamePhase {
-    melding = 'MELDING',
+    estimating = 'ESTIMATING',
     playing = 'PLAYING'
 }
 
@@ -24,7 +24,7 @@ export class Game {
     round = 1;
     currentPlayerIndex = -1;
     currentStartingPlayerIndex = -1;
-    meldings = new Array<Array<{player: Player, nrOfTricks: number}>>();
+    estimates = new Array<Array<{player: Player, nrOfTricks: number}>>();
     addPlayer(player: Player) {
        this.players.push(player); 
     }
@@ -34,8 +34,8 @@ export class Game {
         filter((pI: IGamePhaseInfo) => pI.phase === GamePhase.playing),
         map((pI: IGamePhaseInfo) => pI.game)
     );
-    public meldPhase$: Observable<Game> = this.phase$.pipe(
-        filter((pI: IGamePhaseInfo) => pI.phase === GamePhase.melding),
+    public estimatePhase$: Observable<Game> = this.phase$.pipe(
+        filter((pI: IGamePhaseInfo) => pI.phase === GamePhase.estimating),
         map((pI: IGamePhaseInfo) => pI.game)
     );
     
@@ -45,22 +45,22 @@ export class Game {
         }
         this.currentStartingPlayerIndex = Math.floor(Math.random() * this.numberOfPlayers);
         this.currentPlayerIndex = this.currentStartingPlayerIndex;
-        this.initMelding();
+        this.initEstimating();
     }
 
 
-    public meld(player : Player, nrOfTricks: number) {
+    public estimate(player : Player, nrOfTricks: number) {
         if (this.players.indexOf(player) === -1) {
             throw(`${player.name} is not registered as player`);
         }
         if (nrOfTricks > this.round || nrOfTricks < 0) {
-            throw(`Melded tricks must be in [0, ${this.round}], given: ${nrOfTricks}`);
+            throw(`Estimated tricks must be in [0, ${this.round}], given: ${nrOfTricks}`);
         }
-        if (this.meldings[this.round].filter( v => v.player === player).length !== 0) {
-            throw(`${player.name} has already melded for this round`);
+        if (this.estimates[this.round].filter( v => v.player === player).length !== 0) {
+            throw(`${player.name} has already estimated for this round`);
         }
-        this.meldings[this.round].push({player, nrOfTricks});
-        if (this.meldings[this.round].length === this.players.length) {
+        this.estimates[this.round].push({player, nrOfTricks});
+        if (this.estimates[this.round].length === this.players.length) {
             this.emitPhase(GamePhase.playing);
             this.initPlaying();
         }
@@ -89,18 +89,18 @@ export class Game {
         return this.round;
     }
 
-    getMelding(player: Player) {
-        return this.meldings[this.round]
+    getEstimate(player: Player) {
+        return this.estimates[this.round]
         .filter( v => v.player === player)
         .map(v => v.nrOfTricks)[0];
     }
 
-    private initMelding() {
+    private initEstimating() {
         this.deck = new Deck();
         this.deck.shuffle();
-        this.meldings[this.round] = new Array<{player: Player, nrOfTricks: number}>();
+        this.estimates[this.round] = new Array<{player: Player, nrOfTricks: number}>();
         this.setupPlayers();
-        this.emitPhase(GamePhase.melding);
+        this.emitPhase(GamePhase.estimating);
     }
 
     private emitPhase(phase: GamePhase) {

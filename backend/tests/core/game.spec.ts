@@ -1,5 +1,4 @@
 import { NotActivePlayerError } from '@core/error';
-import { printCollection } from '@helper/output';
 import 'mocha';
 import { Game } from '@core/game';
 import { Player } from '@core/player';
@@ -53,9 +52,9 @@ describe('Game', () => {
         expect(counter[p1.name] > 0 && counter[p2.name] > 0 && counter[p1.name] + counter[p2.name] === 10).to.be.true;
     })
 
-    it('game should start with round 1 and melding phase', (done) => {
+    it('game should start with round 1 and estimating phase', (done) => {
         const g = initGame([p1, p2]);
-        const s = g.meldPhase$.subscribe((g2: Game) => {
+        const s = g.estimatePhase$.subscribe((g2: Game) => {
             expect(g2).to.equal(g);
             expect(g.currentRound).to.equal(1);
             s.unsubscribe();
@@ -66,7 +65,7 @@ describe('Game', () => {
 
     it('all players should have 1 card initially', (done) => {
         const g = initGame([p1, p2]);
-        const s = g.meldPhase$.subscribe( (_: any) => {
+        const s = g.estimatePhase$.subscribe( (_: any) => {
             expect(p1.hand.getNumberOfCards()).to.equal(1);
             expect(p2.hand.getNumberOfCards()).to.equal(1);
             s.unsubscribe();
@@ -76,27 +75,27 @@ describe('Game', () => {
     })
 
 
-    it('during melding phase players should be able to meld', () => {
+    it('during estimating phase players should be able to estimate', () => {
         const g = initGame([p1, p2]);
         g.start();
-        expect( () => {g.meld(p3, 1)}).to.throw();
-        expect( () => {g.meld(p1, 2)}).to.throw();
-        expect( () => {g.meld(p1, 1)}).not.to.throw();
-        expect( () => {g.meld(p1, 1)}).to.throw();
-        expect( () => {g.meld(p2, 0)}).not.to.throw();
-        expect( g.getMelding(p1)).to.equal(1);
-        expect( g.getMelding(p2)).to.equal(0);        
+        expect( () => {g.estimate(p3, 1)}).to.throw();
+        expect( () => {g.estimate(p1, 2)}).to.throw();
+        expect( () => {g.estimate(p1, 1)}).not.to.throw();
+        expect( () => {g.estimate(p1, 1)}).to.throw();
+        expect( () => {g.estimate(p2, 0)}).not.to.throw();
+        expect( g.getEstimate(p1)).to.equal(1);
+        expect( g.getEstimate(p2)).to.equal(0);        
     })
     
-    it('if all players have melded, the phase should switch to playing', (done) => {
+    it('if all players have estimated, the phase should switch to playing', (done) => {
         const g = initGame([p1, p2]);
         g.start();
         const s = g.playPhase$.subscribe( (_: any) => {
             s.unsubscribe();
             done();
         })
-        g.meld(p1, 0);
-        g.meld(p2, 1);
+        g.estimate(p1, 0);
+        g.estimate(p2, 1);
     })
 
     it('only the active player should be allowed to play valid card', (done) => {
@@ -112,8 +111,8 @@ describe('Game', () => {
             }).to.throw(NotActivePlayerError);
             done();
         })
-        g.meld(p1, 0);
-        g.meld(p2, 1);
+        g.estimate(p1, 0);
+        g.estimate(p2, 1);
     })
 
 });
