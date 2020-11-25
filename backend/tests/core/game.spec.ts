@@ -66,7 +66,7 @@ describe('Game', () => {
 
     it('all players should have 1 card initially', (done) => {
         const g = initGame([p1, p2]);
-        const s = g.meldPhase$.subscribe( _ => {
+        const s = g.meldPhase$.subscribe( (_: any) => {
             expect(p1.hand.getNumberOfCards()).to.equal(1);
             expect(p2.hand.getNumberOfCards()).to.equal(1);
             s.unsubscribe();
@@ -91,7 +91,7 @@ describe('Game', () => {
     it('if all players have melded, the phase should switch to playing', (done) => {
         const g = initGame([p1, p2]);
         g.start();
-        const s = g.playPhase$.subscribe( _ => {
+        const s = g.playPhase$.subscribe( (_: any) => {
             s.unsubscribe();
             done();
         })
@@ -104,7 +104,7 @@ describe('Game', () => {
         let naPlayer: Player;
         let aPlayer: Player;
         g.start();
-        const s = g.playPhase$.subscribe( _ => {
+        const s = g.playPhase$.subscribe( (_: any) => {
             s.unsubscribe();
             [naPlayer, aPlayer] = p1 === g.activePlayer ? [p2, p1] : [p1, p2];
             expect(() => {
