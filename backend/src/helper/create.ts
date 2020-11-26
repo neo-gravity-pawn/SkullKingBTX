@@ -1,11 +1,10 @@
-import { Trick } from '@core/trick';
-import { CardCollection } from '@core/cardCollection';
-import { MutableCard } from './../core/mutableCard';
+import { MutableCard } from '@core/mutableCard';
 import { CardType, CardColor, Card } from '@core/card';
+import { NoCardCodeProvidedError } from '@core/error';
 export function cc(cardCode: string): Card {
 
     if (cardCode.length === 0) {
-        throw('No card code supplied to cc function.');
+        throw new NoCardCodeProvidedError();
     }
 
     const typeMap: { [code: string]: any} = {
@@ -55,7 +54,8 @@ export interface ICardAddable {
     addCard: any
 }
 
-export function fillCollection<T extends ICardAddable>(c : (new() => T), options?: IFillOptions) : T {
+// fillCollection is a factory, c: {new(): T} is a class type (as generic)
+export function fillCollection<T extends ICardAddable>(c : {new(): T}, options?: IFillOptions) : T {
     const col = new c();
     const codes = options ? (options.cardCodes ? options.cardCodes.split(',') : []) : [];
     codes.forEach(code => {

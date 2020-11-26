@@ -60,3 +60,9 @@ export class CardCollectionIndexOutsideRangeError extends BaseError {
         super(`Card collection can only provide cards within range [0, ${range}]`);
     }
 }
+
+export class NoCardCodeProvidedError extends BaseError {
+    constructor() {
+        super('no card code provided to cc function');
+    }
+}
