@@ -36,7 +36,7 @@ describe('Card', () => {
     it('Color card note being of correct color / no color leads to error', () => {
         expect( () => {
             const c = new Card({type: CardType.color, value: 10});
-        }).to.throw();
+        }).to.throw(InvalidColorCardError);
         expect( () => {
             const c = new Card({type: CardType.color, value: 10, color: CardColor.black});
         }).to.throw(InvalidColorCardError);
