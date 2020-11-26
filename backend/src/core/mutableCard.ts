@@ -1,4 +1,5 @@
 import { Card, CardType } from './card';
+import { MutableCardIndexOutsideRangeError } from './error';
 
 
 export class MutableCard extends Card {
@@ -17,6 +18,9 @@ export class MutableCard extends Card {
     }
 
     public selectCard(index: number) {
+        if (index < 0 || index >= this.cards.length) {
+            throw new MutableCardIndexOutsideRangeError(this.cards.length - 1);
+        }
         this.selectedCardIndex = index;
         this.setConfiguration();
     }

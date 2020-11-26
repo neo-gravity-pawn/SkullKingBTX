@@ -6,17 +6,18 @@ import { CardCollection } from '@core/cardCollection';
 import { canBeAddedToTrickRule, getHighestCardInTrickRule } from '@core/rules.ts';
 import { cc, fillCollection } from '@helper/create';
 import { Trick } from '@core/trick';
+import { CardCollectionIndexOutsideRangeError } from '@core/error';
 
 let trick: Trick;
 let hand: CardCollection;
 
 describe('Rules - canBeAddedToTrick', () => {
-    it('should trow error if invalid hand car is selected', () => {
+    it('should throw error if invalid hand card is selected', () => {
         trick = fillCollection(Trick, {playerId: 'bob'});
         hand = fillCollection(Hand);
         expect(() => {
             canBeAddedToTrickRule(hand, 1, trick);
-        }).to.throw;
+        }).to.throw(CardCollectionIndexOutsideRangeError);
     })
     it('cards can alway be added to empty trick', () => {
         trick = fillCollection(Trick, {playerId: 'bob'});

@@ -2,6 +2,7 @@ import { MutableCard } from '@core/mutableCard';
 import { Card, CardType, CardColor } from '@core/card';
 import { expect } from 'chai';
 import 'mocha';
+import { MutableCardIndexOutsideRangeError } from '@core/error';
 
 describe ('Mutable Card', () => {
 
@@ -49,10 +50,10 @@ describe ('Mutable Card', () => {
         const mc = new MutableCard(CardType.scarymary, [c1, c2, c3]);
         expect(() => {
             mc.selectCard(-1);
-        }).to.throw();
+        }).to.throw(MutableCardIndexOutsideRangeError);
         expect(() => {
             mc.selectCard(3);
-        }).to.throw();
+        }).to.throw(MutableCardIndexOutsideRangeError);
     });
     
 });

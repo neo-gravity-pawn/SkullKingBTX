@@ -1,3 +1,5 @@
+import { CardValueOutsideRangeError, InvalidColorCardError } from "./error";
+
 export enum CardType {
     escape = 'ESCAPE',
     color = 'COLOR',
@@ -56,7 +58,7 @@ export class Card {
             if (info.types.indexOf(this.configuration.type) !== -1) {
                 const v = this.configuration.value;
                 if (!v || v < info.range[0] || v > info.range[1]) {
-                    throw Error(this.configuration.type +  ' card must have value within ' + info.range + ' but has ' + this.configuration.value);
+                    throw new CardValueOutsideRangeError(this.configuration.type, info.range, v);
                 }
                 break;
             }
@@ -67,7 +69,7 @@ export class Card {
         if (this.configuration.type === CardType.color) {
             const c = this.configuration.color;
             if (c === CardColor.black || c === CardColor.none) {
-                throw Error('Color does not fit to standard color card');
+                throw new InvalidColorCardError(this.configuration.type, c);
             }
         }
     }

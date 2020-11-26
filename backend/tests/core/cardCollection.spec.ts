@@ -2,6 +2,7 @@ import 'mocha';
 import { expect } from 'chai';
 import { CardType, Card, CardColor } from '@core/card';
 import { CardCollection } from '@core/cardCollection';
+import { CardCollectionIndexOutsideRangeError } from '@core/error';
 
 const c1 = new Card({type: CardType.pirate});
 const c2 = new Card({type: CardType.color, color: CardColor.blue, value: 8});
@@ -49,10 +50,10 @@ describe ('Card Collection', () => {
         }).to.not.throw();
         expect(() => {
             const c = col.getCard(-1);
-        }).to.throw();
+        }).to.throw(CardCollectionIndexOutsideRangeError);
         expect(() => {
             const c = col.getCard(3);
-        }).to.throw();
+        }).to.throw(CardCollectionIndexOutsideRangeError);
     })
 
 

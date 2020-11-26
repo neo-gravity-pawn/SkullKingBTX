@@ -1,5 +1,4 @@
 import { CardCollection } from './../../src/core/cardCollection';
-import { Card } from './../../src/core/card';
 import { isMutableCard } from '@core/mutableCard';
 import { MutableCard } from '@core/mutableCard';
 import { CardType, CardColor } from '@core/card';
@@ -7,8 +6,14 @@ import { expect } from 'chai';
 import 'mocha';
 import {cc, fillCollection} from '@helper/create';
 import { Trick } from '@core/trick';
+import { NoCardCodeProvidedError } from '@core/error';
 
 describe('CC (create cards shortcut helper)', () => {
+    it('should require a card code as input', () => {
+        expect( () => {
+            const c = cc('');
+        }).to.throw(NoCardCodeProvidedError);
+    })
     it('should create correct standard cards', () => {
         const cr8 = cc('cr8');
         const p = cc('p');

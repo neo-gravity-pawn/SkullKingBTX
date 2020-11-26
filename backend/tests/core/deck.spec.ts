@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import 'mocha';
 import { isMutableCard, MutableCard } from '@core/mutableCard';
 import { CardType, CardColor } from '@core/card';
+import { CardCollectionIndexOutsideRangeError } from '@core/error';
 
 describe('Deck', () => {
 
@@ -21,10 +22,10 @@ describe('Deck', () => {
         const s = new Deck();
         expect(() => {
             const c = s.getCard(-1);
-        }).to.throw();
+        }).to.throw(CardCollectionIndexOutsideRangeError);
         expect(() => {
             const c = s.getCard(66);
-        }).to.throw();
+        }).to.throw(CardCollectionIndexOutsideRangeError);
     })
 
     it('should contain 65 standard cards and one mutable scarymary card', () => {
