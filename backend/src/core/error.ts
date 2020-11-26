@@ -54,3 +54,9 @@ export class InvalidColorCardError extends BaseError {
         super(`${type} card can not have color ${color}`);
     }
 }
+
+export class CardCollectionIndexOutsideRangeError extends BaseError {
+    constructor(range: number) {
+        super(`Card collection can only provide cards within range [0, ${range}]`);
+    }
+}

@@ -1,4 +1,5 @@
 import { Card, CardColor } from "./card";
+import { CardCollectionIndexOutsideRangeError } from "./error";
 
 export class CardCollection {
     protected cards: Array<Card>;
@@ -20,7 +21,7 @@ export class CardCollection {
 
     public getCard(index: number) : Card {
         if (index < 0 || index >= this.cards.length) {
-            throw Error('Card collection can only provide cards within range [0, '+this.cards.length + ']');
+            throw new CardCollectionIndexOutsideRangeError(this.cards.length - 1);
         }
         return this.cards[index];
     }
