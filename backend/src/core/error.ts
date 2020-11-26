@@ -66,3 +66,9 @@ export class NoCardCodeProvidedError extends BaseError {
         super('no card code provided to cc function');
     }
 }
+
+export class MutableCardIndexOutsideRangeError extends BaseError {
+    constructor(range: number) {
+        super(`Mutable card has only selectable cards within range [0, ${range}]`);
+    }
+}
