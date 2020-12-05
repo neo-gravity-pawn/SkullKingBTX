@@ -1,4 +1,9 @@
-import { EstimateOutsideRangeError, NotActivePlayerError, NotEnougPlayersError, PlayerHasAlreadyEstimatedError, PlayerNotRegisteredError } from './error';
+import { 
+    EstimateOutsideRangeError,
+    NotActivePlayerError,
+    NotEnoughPlayersError,
+    PlayerHasAlreadyEstimatedError,
+    PlayerNotRegisteredError } from './error';
 import { Card } from './card';
 import { Trick } from '@core/trick';
 import { Player } from "@core/player";
@@ -41,7 +46,7 @@ export class Game {
     
     public start() {
         if (this.numberOfPlayers < 2) {
-            throw new NotEnougPlayersError(this.numberOfPlayers);
+            throw new NotEnoughPlayersError(this.numberOfPlayers);
         }
         this.currentStartingPlayerIndex = Math.floor(Math.random() * this.numberOfPlayers);
         this.currentPlayerIndex = this.currentStartingPlayerIndex;

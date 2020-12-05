@@ -1,6 +1,6 @@
 import { 
     NotActivePlayerError,
-    NotEnougPlayersError,
+    NotEnoughPlayersError,
     PlayerNotRegisteredError,
     EstimateOutsideRangeError,
     PlayerHasAlreadyEstimatedError
@@ -37,7 +37,7 @@ describe('Game', () => {
         g.addPlayer(new Player('Bob'));
         expect(() => {
             g.start()
-        }).to.throw(NotEnougPlayersError);
+        }).to.throw(NotEnoughPlayersError);
         g.addPlayer(new Player('Anna'));
         expect(g.numberOfPlayers).to.equal(2);
         expect(() => {

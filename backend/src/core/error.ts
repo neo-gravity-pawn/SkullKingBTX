@@ -19,9 +19,9 @@ export class NotActivePlayerError extends BaseError {
     }
 }
 
-export class NotEnougPlayersError extends BaseError {
+export class NotEnoughPlayersError extends BaseError {
     constructor(private numberOfPlayers: number) {
-        super(`Not enough players (at least 2) to start game. Current number: ${numberOfPlayers}`)
+        super(`Not enough players (at least 2). Current number: ${numberOfPlayers}`)
     }
 }
 
@@ -70,5 +70,11 @@ export class NoCardCodeProvidedError extends BaseError {
 export class MutableCardIndexOutsideRangeError extends BaseError {
     constructor(range: number) {
         super(`Mutable card has only selectable cards within range [0, ${range}]`);
+    }
+}
+
+export class RoundOutsideRangeError extends BaseError {
+    constructor(round: number) {
+        super(`Round hast to be in [1,10], provided: ${round}`);
     }
 }
