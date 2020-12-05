@@ -47,6 +47,21 @@ describe('Rules - canBeAddedToTrick', () => {
         expect(canBeAddedToTrickRule(hand, 0, trick)).to.be.false;
         expect(canBeAddedToTrickRule(hand, 1, trick)).to.be.false;
     })
+    it('respect the color rule we always ignored ;) (once a color is added to trick it needs to be satisfied)', () => {
+        trick = fillCollection(Trick, {playerId: 'bob', cardCodes:  'p,e'});
+        hand = fillCollection(Hand, {cardCodes: 'cr1,cy11'});
+        expect(canBeAddedToTrickRule(hand, 1, trick)).to.be.true;
+        expect(canBeAddedToTrickRule(hand, 0, trick)).to.be.true;
+        trick.addCard(cc('p'), 'frank');
+        expect(canBeAddedToTrickRule(hand, 1, trick)).to.be.true;
+        expect(canBeAddedToTrickRule(hand, 0, trick)).to.be.true;
+        trick.addCard(cc('cr8'), 'neleste');
+        expect(canBeAddedToTrickRule(hand, 1, trick)).to.be.false;
+        expect(canBeAddedToTrickRule(hand, 0, trick)).to.be.true;        
+        trick.addCard(cc('cy7'), 'lisa');
+        expect(canBeAddedToTrickRule(hand, 1, trick)).to.be.false;
+        expect(canBeAddedToTrickRule(hand, 0, trick)).to.be.true;        
+    })
     it('non-color cards can always be added', () => {
         hand = fillCollection(Hand, {cardCodes: 'cr1,cy1,p,m,e,x'});
         trick = fillCollection(Trick, {playerId: 'bob', cardCodes:  'e,t4,p,cy7,p,e,cr8'});
