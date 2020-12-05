@@ -60,7 +60,6 @@ export function getHighestCardInTrickRule(trick: Trick) : [number, number] {
                 extraPoints = 50;
                 setCardAsHighest(trick.getCard(mermaidIndex),mermaidIndex);
             }
-
         }
     }
 
