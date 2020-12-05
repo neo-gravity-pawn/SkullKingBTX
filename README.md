@@ -9,4 +9,9 @@ Based on Node.js.
 ```bash
 npm run start:watch
 ```
+### Run tests
+```bash
+npm run test
+npm run test -- -g specificTestName
+```
 
