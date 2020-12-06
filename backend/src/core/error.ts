@@ -75,6 +75,12 @@ export class MutableCardIndexOutsideRangeError extends BaseError {
 
 export class RoundOutsideRangeError extends BaseError {
     constructor(round: number) {
-        super(`Round hast to be in [1,10], provided: ${round}`);
+        super(`Round has to be in [1,10], provided: ${round}`);
+    }
+}
+
+export class PhaseNotInitializedError extends BaseError {
+    constructor() {
+        super(`Phase needs to be initialized for current round`);
     }
 }
