@@ -32,4 +32,8 @@ describe('Phase', () => {
         }).to.throw(RoundOutsideRangeError);
     })
 
+    // tests for the valid actions check are implemented
+    // for derived class estimatePhase, as they are 
+    // protected and won't be exposed for the test
+
 });
