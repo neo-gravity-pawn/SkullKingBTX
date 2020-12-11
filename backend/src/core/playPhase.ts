@@ -8,13 +8,24 @@
 import { Player } from '@core/player';
 import { Phase } from '@core/phase';
 import { 
-    EstimateOutsideRangeError,
-    PlayerHasAlreadyEstimatedError} from '@core/error';
+    NotActivePlayerError} from '@core/error';
 
 export class PlayPhase extends Phase{
 
+    private activePlayerIndex: number | undefined;
+    private activePlayer: Player | undefined;
+
+
+    onInit() {
+        this.activePlayerIndex = (this.round - 1) % this.players.length;
+        this.activePlayer = this.players[this.activePlayerIndex];
+    }
+
     public play(player: Player, handCardIndex: number) {
         this.checkIfActionValidForPlayer(player);
+        if (player !== this.activePlayer) {
+            throw new NotActivePlayerError(player, this.activePlayer ? this.activePlayer : new Player('UNDEFINED'));
+        }
     }
 
 }

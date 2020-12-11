@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { PlayPhase } from '@core/playPhase';
 import 'mocha';
 import { Player } from '@core/player';
-import { EstimateOutsideRangeError, NotEnoughPlayersError, PhaseNotInitializedError, PlayerHasAlreadyEstimatedError, PlayerNotRegisteredError, RoundOutsideRangeError } from '@core/error';
+import { EstimateOutsideRangeError, NotActivePlayerError, NotEnoughPlayersError, PhaseNotInitializedError, PlayerHasAlreadyEstimatedError, PlayerNotRegisteredError, RoundOutsideRangeError } from '@core/error';
 
 const p1 = new Player('Bob');
 const p2 = new Player('Lisa');
@@ -23,6 +23,37 @@ describe('playPhase', () => {
         expect(() => {
             phase.play(p3, 1);
         }).to.throw(PlayerNotRegisteredError); 
+
+        expect(() => { 
+            phase.play(p2, 1);
+        }).to.throw(NotActivePlayerError);
+
+        expect(() => { 
+            phase.play(p1, 1);
+        }).to.not.throw();
+    })
+
+    it('should switch initial active player depending on round', () => {
+
+        const phase = new PlayPhase([p1, p2, p3]);
+        const roundPlayerMap = [
+            {round: 1, valid: p1, invalid: [p2, p3]},
+            {round: 2, valid: p2, invalid: [p1, p3]},
+            {round: 3, valid: p3, invalid: [p1, p2]},
+            {round: 4, valid: p1, invalid: [p2, p3]}
+        ]
+        roundPlayerMap.forEach(r => {
+            phase.initForRound(r.round);
+            r.invalid.forEach(i => {
+                expect(() => { 
+                    phase.play(i, 1);
+                }).to.throw(NotActivePlayerError);
+            })    
+            expect(() => { 
+                phase.play(r.valid, 1);
+            }).to.not.throw();
+        })
+
     })
     /*
 
