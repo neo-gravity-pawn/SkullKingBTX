@@ -80,7 +80,11 @@ describe('playPhase', () => {
     it ('sould allow players to put cards into current trick', () => {
         const phase = new PlayPhase([p1, p2]);
         phase.initForRound(1);
-        // phase.play()
+        phase.play(p1, 0);
+        phase.play(p2, 0);
+        expect(p1.hand.getNumberOfCards()).to.equal(0);
+        expect(p1.hand.getNumberOfCards()).to.equal(0);
+        expect(phase.getTrick().getNumberOfCards()).to.equal(2);
     })
     /*
 
