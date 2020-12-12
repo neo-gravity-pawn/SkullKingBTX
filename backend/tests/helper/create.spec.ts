@@ -7,6 +7,7 @@ import 'mocha';
 import {cc, fillCollection} from '@helper/create';
 import { Trick } from '@core/trick';
 import { NoCardCodeProvidedError } from '@core/error';
+import { Player } from '@core/player';
 
 describe('CC (create cards shortcut helper)', () => {
     it('should require a card code as input', () => {
@@ -63,7 +64,8 @@ describe('fillTrick', () => {
         expect(fillCollection(Trick) instanceof Trick).to.be.true;
     })
     it('should add correct cards', () => {
-        const col = fillCollection(Trick, {playerId: 'bob', cardCodes: 'cr8,cr9,cy4,t4,p,s,x,e,m'});
+        const p1 = new Player('Bob');
+        const col = fillCollection(Trick, {player: p1, cardCodes: 'cr8,cr9,cy4,t4,p,s,x,e,m'});
         expect(col.getCard(0).conf).to.eql({type: CardType.color, color: CardColor.red, value:8});
         expect(col.getCard(1).conf).to.eql({type: CardType.color, color: CardColor.red, value:9});
         expect(col.getCard(2).conf).to.eql({type: CardType.color, color: CardColor.yellow, value:4});
@@ -74,7 +76,7 @@ describe('fillTrick', () => {
         expect(col.getCard(8).conf).to.eql({type: CardType.mermaid, color: CardColor.none, value:-1});
         expect((col.getCard(6) as MutableCard).mutableType).to.eql(CardType.scarymary);
         for (let i = 0; i < 9; i++) {
-            expect(col.getPlayerIdForCard(i)).to.eql('bob');
+            expect(col.getPlayerForCard(i)).to.eql(p1);
         }
     })
 });

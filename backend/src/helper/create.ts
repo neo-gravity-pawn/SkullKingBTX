@@ -1,6 +1,7 @@
 import { MutableCard } from '@core/mutableCard';
 import { CardType, CardColor, Card } from '@core/card';
 import { NoCardCodeProvidedError } from '@core/error';
+import { Player } from '@core/player';
 export function cc(cardCode: string): Card {
 
     if (cardCode.length === 0) {
@@ -46,7 +47,7 @@ export function cc(cardCode: string): Card {
 }
 
 export interface IFillOptions {
-    playerId?: string,
+    player?: Player,
     cardCodes?: string,
 }
 
@@ -61,7 +62,7 @@ export function fillCollection<T extends ICardAddable>(c : {new(): T}, options?:
     codes.forEach(code => {
         if (code !== '') {
             if (options) {
-                options.playerId ? col.addCard(cc(code), options.playerId) : col.addCard(cc(code));
+                options.player ? col.addCard(cc(code), options.player) : col.addCard(cc(code));
             }
         }
     })
