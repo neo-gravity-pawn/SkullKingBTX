@@ -5,4 +5,7 @@ export class Player {
     get name() {
         return this.playerName;
     }
+    resetHand() {
+        this.hand = new Hand();
+    }
 }

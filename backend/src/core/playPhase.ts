@@ -9,6 +9,8 @@ import { Player } from '@core/player';
 import { Phase } from '@core/phase';
 import { 
     NotActivePlayerError} from '@core/error';
+import { Deck } from './deck';
+
 
 export class PlayPhase extends Phase{
 
@@ -19,13 +21,25 @@ export class PlayPhase extends Phase{
     onInit() {
         this.activePlayerIndex = (this.round - 1) % this.players.length;
         this.activePlayer = this.players[this.activePlayerIndex];
+        this.dealCards();
     }
 
-    public play(player: Player, handCardIndex: number) {
+    public play(player: Player, handCardIndex: number): void {
         this.checkIfActionValidForPlayer(player);
         if (player !== this.activePlayer) {
             throw new NotActivePlayerError(player, this.activePlayer ? this.activePlayer : new Player('UNDEFINED'));
         }
+    }
+
+    private dealCards(): void {
+        const deck = new Deck();
+        deck.shuffle();
+        this.players.forEach(player => {
+            player.resetHand();
+            for(let r = 0; r < this.round; r++) {
+                player.hand.addCard(deck.removeCard(0))
+            }
+        })
     }
 
 }

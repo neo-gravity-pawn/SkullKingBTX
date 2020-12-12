@@ -55,6 +55,18 @@ describe('playPhase', () => {
         })
 
     })
+
+    it('should provide players with cards according to round', () => {
+        const phase = new PlayPhase([p1, p2]);
+        phase.initForRound(1);
+        expect(p1.hand.getNumberOfCards()).to.equal(1);
+        expect(p2.hand.getNumberOfCards()).to.equal(1);
+        phase.initForRound(7);
+        expect(p1.hand.getNumberOfCards()).to.equal(7);
+        expect(p2.hand.getNumberOfCards()).to.equal(7);
+
+
+    })
     /*
 
     it('should return the estimate for a player', () => {
