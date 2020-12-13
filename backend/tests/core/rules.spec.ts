@@ -85,58 +85,58 @@ describe('Rules - canBeAddedToTrick', () => {
 describe('Rules - getHighestCardInTrick', () => {
     it('should provide correct index for pure color trick', () => {
         const t = fillCollection(Trick, {player: new Player('bob'), cardCodes:  'cr3,cy4,cr9,cb5'});
-        expect(getHighestCardInTrickRule(t)).to.eql([2, 0]);
+        expect(getHighestCardInTrickRule(t)).to.eql({highestCardIndex: 2, extraPoints: 0});
     })
     it('should provide correct index for trump', () => {
         let t = fillCollection(Trick, {player: new Player('bob'), cardCodes:  'cr3,t1,cr9,t6,cb5'});
-        expect(getHighestCardInTrickRule(t)).to.eql([3, 0]);
+        expect(getHighestCardInTrickRule(t)).to.eql({highestCardIndex: 3, extraPoints: 0});
         t = fillCollection(Trick, {player: new Player('bob'), cardCodes:  'cr3,t1,cr9,t6,m,cb5'});
-        expect(getHighestCardInTrickRule(t)).to.eql([4, 0]);
+        expect(getHighestCardInTrickRule(t)).to.eql({highestCardIndex: 4, extraPoints: 0});
     })
     it('should provide correct index for pirate', () => {
         let t = fillCollection(Trick, {player: new Player('bob'), cardCodes:  'cr3,t1,cr9,p,t6,cb5,p'})
-        expect(getHighestCardInTrickRule(t)).to.eql([3, 0]);
+        expect(getHighestCardInTrickRule(t)).to.eql({highestCardIndex: 3, extraPoints: 0});
         t = fillCollection(Trick, {player: new Player('bob'), cardCodes:  'cr3,s,cr9,p,t6,cb5,p'});
-        expect(getHighestCardInTrickRule(t)).to.eql([1, 60]);
+        expect(getHighestCardInTrickRule(t)).to.eql({highestCardIndex: 1, extraPoints: 60});
     })
     it('should provide correct index for mermaid', () => {
         let t = fillCollection(Trick, {player: new Player('bob'), cardCodes:  'cr3,m,t1,cr9,m,t6,cb5'})
-        expect(getHighestCardInTrickRule(t)).to.eql([1, 0]);
+        expect(getHighestCardInTrickRule(t)).to.eql({highestCardIndex: 1, extraPoints: 0});
         t = fillCollection(Trick, {player: new Player('bob'), cardCodes:  'cr3,m,t1,cr9,t6,cb5,p'});
-        expect(getHighestCardInTrickRule(t)).to.eql([6, 0]);
+        expect(getHighestCardInTrickRule(t)).to.eql({highestCardIndex: 6, extraPoints: 0});
     })
     it('should provide correct index and points for skullking', () => {
         let t = fillCollection(Trick, {player: new Player('bob'), cardCodes:  'p,cb4,s,cr9,p,cb5'});
-        expect(getHighestCardInTrickRule(t)).to.eql([2, 60]);
+        expect(getHighestCardInTrickRule(t)).to.eql({highestCardIndex: 2, extraPoints: 60});
     })
     it('should work with mermaid extra rule', () => {
         let t = fillCollection(Trick, {player: new Player('bob'), cardCodes:  'p,cb4,s,cr9,m,p,cb5,m'});
-        expect(getHighestCardInTrickRule(t)).to.eql([4, 50]);
+        expect(getHighestCardInTrickRule(t)).to.eql({highestCardIndex: 4, extraPoints: 50});
         t = fillCollection(Trick, {player: new Player('bob'), cardCodes:  'p,cb4,m,cr9,s,p,cb5,m'});
-        expect(getHighestCardInTrickRule(t)).to.eql([2, 50]);
+        expect(getHighestCardInTrickRule(t)).to.eql({highestCardIndex: 2, extraPoints: 50});
     })
     it('should provide correct index for escape', () => {
         let t = fillCollection(Trick, {player: new Player('bob'), cardCodes:  'cy4,cb3,e'});
-        expect(getHighestCardInTrickRule(t)).to.eql([0, 0]);
+        expect(getHighestCardInTrickRule(t)).to.eql({highestCardIndex: 0, extraPoints: 0});
         t = fillCollection(Trick, {player: new Player('bob'), cardCodes:  'e,e,e,e'});
-        expect(getHighestCardInTrickRule(t)).to.eql([0, 0]);
+        expect(getHighestCardInTrickRule(t)).to.eql({highestCardIndex: 0, extraPoints: 0});
         t = fillCollection(Trick, {player: new Player('bob'), cardCodes:  'e,e,cy1,e'});
-        expect(getHighestCardInTrickRule(t)).to.eql([2, 0]);
+        expect(getHighestCardInTrickRule(t)).to.eql({highestCardIndex: 2, extraPoints: 0});
     })
     it('should provide correct index for scary mary', () => {
         let t = fillCollection(Trick, {player: new Player('bob'), cardCodes:  't8,cb13,m'});
         const c = cc('x');
         (c as MutableCard).selectCard(1);
         t.addCard(c, p1);
-        expect(getHighestCardInTrickRule(t)).to.eql([2, 0]);
+        expect(getHighestCardInTrickRule(t)).to.eql({highestCardIndex: 2, extraPoints: 0});
         t = fillCollection(Trick, {player: new Player('bob'), cardCodes:  't8,cb13,m'});
         (c as MutableCard).selectCard(0);
         t.addCard(c, p1);
-        expect(getHighestCardInTrickRule(t)).to.eql([3, 0]);
+        expect(getHighestCardInTrickRule(t)).to.eql({highestCardIndex: 3, extraPoints: 0});
         t = fillCollection(Trick, {player: new Player('bob'), cardCodes:  't8,p,cb13,m'});
         (c as MutableCard).selectCard(0);
         t.addCard(c, p1);
-        expect(getHighestCardInTrickRule(t)).to.eql([1, 0]);
+        expect(getHighestCardInTrickRule(t)).to.eql({highestCardIndex: 1, extraPoints: 0});
     })
     it('should provide correct player id', () => {
         let t = fillCollection(Trick);
