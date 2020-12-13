@@ -22,7 +22,7 @@ export function canBeAddedToTrickRule(hand: CardCollection, cardIndex: number, t
     return true;
 }
 
-export function getHighestCardInTrickRule(trick: Trick) : [number, number] {
+export function getHighestCardInTrickRule(trick: Trick) : {highestCardIndex: number, extraPoints: number} {
     const cardOrder =  {
         [CardType.escape]: 0,
         [CardType.color]: 1,
@@ -33,7 +33,7 @@ export function getHighestCardInTrickRule(trick: Trick) : [number, number] {
         [CardType.skullking]: 5,
     }
     if (trick.getNumberOfCards() === 0) {
-        return [-1, 0];
+        return {highestCardIndex: -1, extraPoints: 0};
     }
     let pirateCount = 0;
     let mermaidIndex = -1;
@@ -90,5 +90,5 @@ export function getHighestCardInTrickRule(trick: Trick) : [number, number] {
             extraPoints = pirateCount * 30;
         }
     }
-    return [currentHighestCardIndex, extraPoints];
+    return {highestCardIndex: currentHighestCardIndex, extraPoints};
 }

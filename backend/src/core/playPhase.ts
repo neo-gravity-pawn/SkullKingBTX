@@ -11,14 +11,17 @@ import {
     NotActivePlayerError} from '@core/error';
 import { Deck } from './deck';
 import { Trick } from './trick';
-import { canBeAddedToTrickRule } from './rules';
+import { canBeAddedToTrickRule, getHighestCardInTrickRule } from './rules';
+import { Subject } from 'rxjs';
+
 
 
 export class PlayPhase extends Phase{
 
     private activePlayer!: Player;
     private trick!: Trick;
-
+    private currentTrickCompleteSub = new Subject();
+    public currentTrickComplete$ = this.currentTrickCompleteSub.asObservable();
 
     onInit() {
         this.activePlayer = this.players[(this.round - 1) % this.players.length];
@@ -39,6 +42,7 @@ export class PlayPhase extends Phase{
             this.trick.addCard(player.hand.removeCard(handCardIndex), player);
         }
         this.setNextPlayer();
+        this.checkIfTrickIsComplete();
     }
 
     public getTrick(): Trick {
@@ -59,6 +63,15 @@ export class PlayPhase extends Phase{
                 player.hand.addCard(deck.removeCard(0))
             }
         })
+    }
+
+    private checkIfTrickIsComplete(): void {
+        if (this.trick.getNumberOfCards() === this.players.length) {
+            const info = getHighestCardInTrickRule(this.trick);
+            this.activePlayer = this.trick.getPlayerForCard(info.highestCardIndex);
+            this.trick = new Trick(); // ATTENTION Trick content is lost
+            this.currentTrickCompleteSub.next();
+        }
     }
 
 }

@@ -142,16 +142,16 @@ describe('Rules - getHighestCardInTrick', () => {
         let t = fillCollection(Trick);
         t.addCard(cc('cr8'), p1);
         t.addCard(cc('cr13'), p2);
-        expect(t.getPlayerForCard(getHighestCardInTrickRule(t)[0])).to.eql(p2);
+        expect(t.getPlayerForCard(getHighestCardInTrickRule(t).highestCardIndex)).to.eql(p2);
         t.addCard(cc('cy3'), p3);
-        expect(t.getPlayerForCard(getHighestCardInTrickRule(t)[0])).to.eql(p2);
+        expect(t.getPlayerForCard(getHighestCardInTrickRule(t).highestCardIndex)).to.eql(p2);
         t.addCard(cc('m'), p4);
-        expect(t.getPlayerForCard(getHighestCardInTrickRule(t)[0])).to.eql(p4);
+        expect(t.getPlayerForCard(getHighestCardInTrickRule(t).highestCardIndex)).to.eql(p4);
         t.addCard(cc('e'), p5);
-        expect(t.getPlayerForCard(getHighestCardInTrickRule(t)[0])).to.eql(p4);
+        expect(t.getPlayerForCard(getHighestCardInTrickRule(t).highestCardIndex)).to.eql(p4);
         t.addCard(cc('p'), p6);
-        expect(t.getPlayerForCard(getHighestCardInTrickRule(t)[0])).to.eql(p6);
+        expect(t.getPlayerForCard(getHighestCardInTrickRule(t).highestCardIndex)).to.eql(p6);
         t.addCard(cc('s'), p7);
-        expect(t.getPlayerForCard(getHighestCardInTrickRule(t)[0])).to.eql(p4); 
+        expect(t.getPlayerForCard(getHighestCardInTrickRule(t).highestCardIndex)).to.eql(p4); 
     })
 })
