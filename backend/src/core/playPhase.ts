@@ -20,11 +20,13 @@ export class PlayPhase extends Phase{
 
     private activePlayer!: Player;
     private trick!: Trick;
+    private nrOfCompletedTrick = 0;
     private currentTrickCompleteSub = new Subject();
     public currentTrickComplete$ = this.currentTrickCompleteSub.asObservable();
 
     onInit() {
         this.activePlayer = this.players[(this.round - 1) % this.players.length];
+        this.nrOfCompletedTrick = 0;
         this.dealCards();
         this.trick = new Trick();
     }
@@ -71,6 +73,10 @@ export class PlayPhase extends Phase{
             this.activePlayer = this.trick.getPlayerForCard(info.highestCardIndex);
             this.trick = new Trick(); // ATTENTION Trick content is lost
             this.currentTrickCompleteSub.next();
+            this.nrOfCompletedTrick += 1;
+            if (this.nrOfCompletedTrick === this.round) {
+                this.finishCurrentPhase();
+            }
         }
     }
 

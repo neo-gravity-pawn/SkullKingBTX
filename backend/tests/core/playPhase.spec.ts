@@ -108,19 +108,19 @@ describe('playPhase', () => {
         phase.play(p1, 0); //p
         phase.play(p2, 0); //t13
     })
-    /*
+    
 
     it('should provide an finished observer', (done) => {
-        const phase = new EstimatePhase([p1, p2]);
+        const phase = new PlayPhase([p1, p2]);
         const s = phase.finishedForCurrentRound$.subscribe( (_: any) => {
             s.unsubscribe();
             done();
         })
 
         phase.initForRound(1);
-        phase.estimate(p1, 1);
-        phase.estimate(p2, 0);
+        phase.play(p1, 0);
+        phase.play(p2, 0);
 
-    })*/
+    })
 
 });
