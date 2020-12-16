@@ -26,6 +26,10 @@ export class Phase {
         this.onInit();
     }
 
+    public getRound() {
+        return this.round;
+    }
+
     protected onInit() {
         // can be overidden by subclass
     }

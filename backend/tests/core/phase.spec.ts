@@ -32,6 +32,13 @@ describe('Phase', () => {
         }).to.throw(RoundOutsideRangeError);
     })
 
+    it ('should return current round', () => {
+        const phase = new Phase([p1, p2]);
+        phase.initForRound(7);
+        expect(phase.getRound()).to.equal(7);
+    })
+
+
     // tests for the valid actions check are implemented
     // for derived class estimatePhase, as they are 
     // protected and won't be exposed for the test
