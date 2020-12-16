@@ -1,6 +1,7 @@
 import { CardCollection } from '@core/cardCollection';
 import { MutableCard } from './mutableCard';
 import { Card, CardColor, CardType } from "./card";
+import { shuffleArray } from '@helper/algorithms';
 
 export class Deck extends CardCollection {
     constructor() {
@@ -35,11 +36,6 @@ export class Deck extends CardCollection {
     }
 
     public shuffle() {
-        // Fisher-Yates shuffle
-        // https://javascript.info/task/shuffle
-        for (let i = this.cards.length - 1; i > 0; i--) {
-            let j = Math.floor(Math.random() * (i + 1));
-            [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
-          }
+        shuffleArray(this.cards);
     }
 }

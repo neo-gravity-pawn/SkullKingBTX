@@ -1,17 +1,18 @@
 import { Card } from './card';
 import { CardCollection } from '@core/cardCollection';
+import { Player } from '@core/player';
 export class Trick extends CardCollection {
-    cardPlayerMap = new Array<string>();
+    cardPlayerMap = new Array<Player>();
     constructor() {
         super();
     }
 
-    public addCard(card: Card, playerId: string) {
+    public addCard(card: Card, player: Player): void {
         super.addCard(card);
-        this.cardPlayerMap.push(playerId);
+        this.cardPlayerMap.push(player);
     }
 
-    public getPlayerIdForCard(index: number) {
+    public getPlayerForCard(index: number): Player {
         return this.cardPlayerMap[index];
     }
 
