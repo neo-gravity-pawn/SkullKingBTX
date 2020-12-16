@@ -14,9 +14,6 @@ export class NotActivePlayerError extends BaseError {
     constructor(private givenPlayer: Player, private activePlayer: Player) {
         super(`${givenPlayer.name} is not the active player. Active player: ${activePlayer.name}`);
     }
-    get activePlayerName() {
-        return this.activePlayer.name;
-    }
 }
 
 export class NotEnoughPlayersError extends BaseError {

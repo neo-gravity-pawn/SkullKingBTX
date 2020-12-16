@@ -47,10 +47,6 @@ export class PlayPhase extends Phase{
         this.checkIfTrickIsComplete();
     }
 
-    public getTrick(): Trick {
-        return this.trick;
-    }
-
     private setNextPlayer() {
         const index = (this.players.indexOf(this.activePlayer) + 1) % this.players.length;
         this.activePlayer = this.players[index];

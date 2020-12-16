@@ -3,8 +3,7 @@ import { PlayPhase } from '@core/playPhase';
 import 'mocha';
 import { Player } from '@core/player';
 import { Hand } from '@core/hand';
-import { EstimateOutsideRangeError, NotActivePlayerError, NotEnoughPlayersError, PhaseNotInitializedError, PlayerHasAlreadyEstimatedError, PlayerNotRegisteredError, RoundOutsideRangeError } from '@core/error';
-import { printCollection } from '@helper/output';
+import { NotActivePlayerError, PhaseNotInitializedError, PlayerNotRegisteredError } from '@core/error';
 import { fillCollection } from '@helper/create';
 
 const p1 = new Player('Bob');

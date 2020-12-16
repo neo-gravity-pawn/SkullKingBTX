@@ -69,6 +69,7 @@ describe('Game', () => {
                 p.estimate(p1, 0);
                 p.estimate(p2, 1);
                 console.log("CHECKED");
+
             }
             if (i.phaseType === GamePhase.play) {
                 expect(estimatePhaseHappened).to.be.true;
@@ -79,49 +80,4 @@ describe('Game', () => {
         })
         g.start();
     })
-
-    /*
-
-    it('should initially provide a random start player', () => {
-        const g = initGame([p1, p2]);
-        const counter = {
-            [p1.name] : 0,
-            [p2.name] : 0
-        };
-        for (let i = 0; i < 10; i++) {
-            g.start();
-            counter[g.activePlayer.name]++;
-        }
-        expect(counter[p1.name] > 0 && counter[p2.name] > 0 && counter[p1.name] + counter[p2.name] === 10).to.be.true;
-    })
-
-    
-    it('if all players have estimated, the phase should switch to playing', (done) => {
-        const g = initGame([p1, p2]);
-        g.start();
-        const s = g.playPhase$.subscribe( (_: any) => {
-            s.unsubscribe();
-            done();
-        })
-        g.estimate(p1, 0);
-        g.estimate(p2, 1);
-    })
-
-    it('only the active player should be allowed to play valid card', (done) => {
-        const g = initGame([p1, p2]);
-        let naPlayer: Player;
-        let aPlayer: Player;
-        g.start();
-        const s = g.playPhase$.subscribe( (_: any) => {
-            s.unsubscribe();
-            [naPlayer, aPlayer] = p1 === g.activePlayer ? [p2, p1] : [p1, p2];
-            expect(() => {
-                g.play(naPlayer,0);
-            }).to.throw(NotActivePlayerError);
-            done();
-        })
-        g.estimate(p1, 0);
-        g.estimate(p2, 1);
-    })*/
-
 });
