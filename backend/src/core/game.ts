@@ -1,30 +1,18 @@
 import { 
     NotEnoughPlayersError } from './error';
 import { Player } from "@core/player";
-import { Subject } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { merge, Subject, Subscription } from 'rxjs';
 import { Phase } from './phase';
 import { EstimatePhase } from './estimatePhase';
 import { PlayPhase } from './playPhase';
 
-export enum GamePhase {
-    estimate = 'ESTIMATING',
-    play = 'PLAYING'
-}
-
-export interface IPhaseInfo {
-    phaseType: GamePhase,
-    phase: Phase
-}
-
 export class Game {
     private players = Array<Player>();
     private round = 1;
-    private currentPhase!: Phase;
-    private phaseSubject = new Subject<IPhaseInfo>();
-    private estimatePhase!: EstimatePhase;
-    private playPhase!: PlayPhase;
-    private currentPhaseFinished!: Promise<any>;
+    private phaseSubject = new Subject<Phase>();
+    private phases!: Array<Phase>;
+    private phaseFinishedSubscription!: Subscription;
+    private phaseCounter = 0;
     public phase$ = this.phaseSubject.asObservable();
 
     get numberOfPlayers() {
@@ -40,34 +28,29 @@ export class Game {
             throw new NotEnoughPlayersError(this.numberOfPlayers);
         }
         this.setupPhases();
-        this.initEstimatePhase();
-        // this.initPlayPhase();
+        this.initCurrentPhase();
     }
 
     private setupPhases() {
-        this.estimatePhase = new EstimatePhase(this.players);
-        this.playPhase = new PlayPhase(this.players);
-    }
-
-    private async initEstimatePhase() {
-        this.currentPhase = this.estimatePhase;
-        this.currentPhase.finishedForCurrentRound$.subscribe( _ => {
-            this.initPlayPhase();
+        this.phaseCounter = 0;
+        this.phases = [
+            new EstimatePhase(this.players),
+            new PlayPhase(this.players),
+        ]
+        this.phaseFinishedSubscription ? this.phaseFinishedSubscription.unsubscribe() : null;
+        this.phaseFinishedSubscription = merge(
+            this.phases[0].finishedForCurrentRound$,
+            this.phases[1].finishedForCurrentRound$
+        ).subscribe( _ => {
+            this.phaseCounter += 1;
+            this.initCurrentPhase();
         })
-        this.setupCurrentPhase(GamePhase.estimate);
-
-        // await this.currentPhaseFinished;
     }
 
-    private initPlayPhase() {
-        this.currentPhase = this.playPhase;
-        this.setupCurrentPhase(GamePhase.play);
-    }
-
-    private setupCurrentPhase(phaseType: GamePhase) {
-        this.currentPhase.initForRound(this.round);
-        this.currentPhaseFinished = this.currentPhase.finishedForCurrentRound$.pipe(take(1)).toPromise();
-        this.phaseSubject.next({phaseType, phase: this.currentPhase});
+    private initCurrentPhase() {
+        const phase = this.phases[this.phaseCounter];
+        phase.initForRound(this.round);
+        this.phaseSubject.next(phase);
     }
 
 }

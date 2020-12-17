@@ -1,15 +1,13 @@
 import { 
-    NotActivePlayerError,
-    NotEnoughPlayersError,
-    PlayerNotRegisteredError,
-    EstimateOutsideRangeError,
-    PlayerHasAlreadyEstimatedError
+    NotEnoughPlayersError
 } from '@core/error';
 import 'mocha';
-import { Game, GamePhase, IPhaseInfo } from '@core/game';
+import { Game } from '@core/game';
 import { Player } from '@core/player';
 import { expect } from 'chai';
 import { EstimatePhase } from '@core/estimatePhase';
+import { Phase } from '@core/phase';
+import { PlayPhase } from '@core/playPhase';
 
 const p1 = new Player('Bob');
 const p2 = new Player('Anna');
@@ -30,7 +28,6 @@ describe('Game', () => {
         expect(g.numberOfPlayers).to.equal(1);
         g.addPlayer(p2);
         expect(g.numberOfPlayers).to.equal(2);
-        //expect(g.registeredPlayers).to.eql([p1, p2]);
     })
 
     it('should be startable if at least two players are added', () => {
@@ -48,10 +45,9 @@ describe('Game', () => {
 
     it('game should start with round 1 and estimating phase', (done) => {
         const g = initGame([p1, p2]);
-        const s = g.phase$.subscribe((i: IPhaseInfo) => {
-            expect(i.phase instanceof EstimatePhase).to.be.true;
-            expect(i.phaseType).to.equal(GamePhase.estimate);
-            expect(i.phase.getRound()).to.equal(1);
+        const s = g.phase$.subscribe((p: Phase) => {
+            expect(p instanceof EstimatePhase).to.be.true;
+            expect(p.getRound()).to.equal(1);
             s.unsubscribe();
             done();
         })
@@ -62,16 +58,14 @@ describe('Game', () => {
         const g = initGame([p1, p2]);
         let estimatePhaseHappened = false;
 
-        const s = g.phase$.subscribe( (i: IPhaseInfo) => {
-            if (i.phaseType === GamePhase.estimate) {
+        const s = g.phase$.subscribe( (p: Phase) => {
+            if (p instanceof EstimatePhase) {
                 estimatePhaseHappened = true;
-                const p = (i.phase as EstimatePhase);
-                p.estimate(p1, 0);
-                p.estimate(p2, 1);
-                console.log("CHECKED");
-
+                const ph = (p as EstimatePhase);
+                ph.estimate(p1, 0);
+                ph.estimate(p2, 1);
             }
-            if (i.phaseType === GamePhase.play) {
+            if (p instanceof PlayPhase) {
                 expect(estimatePhaseHappened).to.be.true;
                 s.unsubscribe();
                 done();
