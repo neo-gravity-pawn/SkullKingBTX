@@ -15,14 +15,17 @@ import { canBeAddedToTrickRule, getHighestCardInTrickRule } from './rules';
 import { Subject } from 'rxjs';
 
 
-
+export interface ITrickResult {
+    winningPlayer: Player,
+    extraPoints: number
+}
 export class PlayPhase extends Phase{
 
     private activePlayer!: Player;
     private trick!: Trick;
     private nrOfCompletedTrick = 0;
-    private currentTrickCompleteSub = new Subject();
-    public currentTrickComplete$ = this.currentTrickCompleteSub.asObservable();
+    private currentTrickCompleteSubject = new Subject<ITrickResult>();
+    public currentTrickComplete$ = this.currentTrickCompleteSubject.asObservable();
 
     onInit() {
         this.activePlayer = this.players[(this.round - 1) % this.players.length];
@@ -68,7 +71,10 @@ export class PlayPhase extends Phase{
             const info = getHighestCardInTrickRule(this.trick);
             this.activePlayer = this.trick.getPlayerForCard(info.highestCardIndex);
             this.trick = new Trick(); // ATTENTION Trick content is lost
-            this.currentTrickCompleteSub.next();
+            this.currentTrickCompleteSubject.next({
+                winningPlayer: this.activePlayer, 
+                extraPoints: info.extraPoints
+            });
             this.nrOfCompletedTrick += 1;
             if (this.nrOfCompletedTrick === this.round) {
                 this.finishCurrentPhase();
