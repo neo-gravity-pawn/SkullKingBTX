@@ -2,6 +2,11 @@ import { Trick } from '@core/trick';
 import { Card, CardType } from './card';
 import { CardCollection } from '@core/cardCollection';
 
+export interface ITrickInfo {
+    highestCardIndex: number,
+    extraPoints: number;
+}
+
 export function canBeAddedToTrickRule(hand: CardCollection, cardIndex: number, trick: Trick): Boolean {
     const card = hand.getCard(cardIndex);
     if (card.type !== CardType.color && card.type !== CardType.trump) {
@@ -22,7 +27,7 @@ export function canBeAddedToTrickRule(hand: CardCollection, cardIndex: number, t
     return true;
 }
 
-export function getHighestCardInTrickRule(trick: Trick) : {highestCardIndex: number, extraPoints: number} {
+export function getHighestCardInTrickRule(trick: Trick) : ITrickInfo {
     const cardOrder =  {
         [CardType.escape]: 0,
         [CardType.color]: 1,
@@ -91,4 +96,21 @@ export function getHighestCardInTrickRule(trick: Trick) : {highestCardIndex: num
         }
     }
     return {highestCardIndex: currentHighestCardIndex, extraPoints};
+}
+
+export function getPoints(estimatedNrOfTricks: number, realNrOfTricks: number, round: number): number {
+    let points = -1;
+    if (estimatedNrOfTricks === 0 && estimatedNrOfTricks === realNrOfTricks) {
+        points = round * 10;
+    }
+    else if (estimatedNrOfTricks === 0 && estimatedNrOfTricks !== realNrOfTricks) {
+        points = round * -10;
+    }
+    else if (estimatedNrOfTricks === realNrOfTricks) {
+        points = estimatedNrOfTricks * 20;
+    } 
+    else if (estimatedNrOfTricks !== realNrOfTricks) {
+        points = Math.abs(estimatedNrOfTricks - realNrOfTricks) * -10;
+    }
+    return points;
 }
