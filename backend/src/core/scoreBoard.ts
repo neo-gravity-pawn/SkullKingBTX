@@ -1,5 +1,6 @@
 import { PlayerNotRegisteredError, RoundOutsideRangeError } from "./error";
 import { Player } from "./player";
+import { getPoints } from "./rules";
 
 export interface IPlayerScores {
     player: Player,
@@ -8,8 +9,10 @@ export interface IPlayerScores {
 
 export interface IPlayerScoreEntry {
     estimate: number,
+    result: number,
     extraPoints: number,
-    currentPoints: number
+    points: number,
+    accumulatedPoints: number
 }
 
 export class ScoreBoard {
@@ -26,8 +29,10 @@ export class ScoreBoard {
             for (let i = 0; i<this.maxNrOfRounds; i++) {
                entries.push({
                    estimate: -1,
+                   result: -1,
                    extraPoints: 0,
-                   currentPoints: 0
+                   points: 0,
+                   accumulatedPoints: 0
                })
             }
         })
@@ -57,5 +62,23 @@ export class ScoreBoard {
             throw new RoundOutsideRangeError(round);
         }
         return entries[round-1];
+    }
+
+    public setResult(player: Player, estimatedNumberOfTrick: number, realNumberOfTricks: number, extraPoints: number) {
+        const entry = this.getEntry(player, this.round);
+        entry.estimate = estimatedNumberOfTrick;
+        entry.result = realNumberOfTricks;
+        entry.extraPoints = estimatedNumberOfTrick === realNumberOfTricks ? extraPoints : 0;
+        entry.points = getPoints(estimatedNumberOfTrick, realNumberOfTricks, this.round) + entry.extraPoints;
+        this.updateAccumulatedPoints(player);
+    }
+    
+    private updateAccumulatedPoints(player: Player) {
+        let sum = 0;
+        const entries = this.getEntriesForPlayer(player);
+        entries.forEach(entry => {
+            sum += entry.points;
+            entry.accumulatedPoints = sum;
+        })
     }
 }

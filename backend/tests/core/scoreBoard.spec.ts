@@ -1,7 +1,7 @@
 import 'mocha';
 import { expect } from 'chai';
 import { Player } from '@core/player';
-import { ScoreBoard, IPlayerScores, IPlayerScoreEntry } from '@core/scoreBoard';
+import { ScoreBoard, IPlayerScoreEntry } from '@core/scoreBoard';
 import { PlayerNotRegisteredError, RoundOutsideRangeError } from '@core/error';
 
 const p1 = new Player('Bob');
@@ -41,9 +41,31 @@ describe('ScoreBoard', () => {
         expect(entry.estimate).to.equal(2);
         entry = sb.getEntry(p2, 3);
         expect(entry.estimate).to.equal(2);
-
-
-
+    });
+    it('should correctly calculate points', () => {
+        let entry: IPlayerScoreEntry;
+        const sb = new ScoreBoard([p1, p2]);
+        sb.setRound(1);
+        sb.setResult(p1, 1, 1, 0); // 20
+        sb.setResult(p2, 1, 0, 0); // -10
+        sb.setRound(2);
+        sb.setResult(p1, 2, 1, 0); // -10
+        sb.setResult(p2, 1, 1, 50); // 70
+        sb.setRound(3);
+        sb.setResult(p1, 1, 1, 30);// 50
+        sb.setResult(p2, 0, 0, 0); // 30
+        entry = sb.getEntry(p1, 1);
+        expect(entry.estimate === 1 && entry.result === 1 && entry.extraPoints === 0 && entry.points === 20 && entry.accumulatedPoints === 20).to.be.true;
+        entry = sb.getEntry(p2, 1);
+        expect(entry.estimate === 1 && entry.result === 0 && entry.extraPoints === 0 && entry.points === -10 && entry.accumulatedPoints === -10).to.be.true;
+        entry = sb.getEntry(p1, 2);
+        expect(entry.estimate === 2 && entry.result === 1 && entry.extraPoints === 0 && entry.points === -10 && entry.accumulatedPoints === 10).to.be.true;
+        entry = sb.getEntry(p2, 2);
+        expect(entry.estimate === 1 && entry.result === 1 && entry.extraPoints === 50 && entry.points === 70 && entry.accumulatedPoints === 60).to.be.true;
+        entry = sb.getEntry(p1, 3);
+        expect(entry.estimate === 1 && entry.result === 1 && entry.extraPoints === 30 && entry.points === 50 && entry.accumulatedPoints === 60).to.be.true;
+        entry = sb.getEntry(p2, 3);
+        expect(entry.estimate === 0 && entry.result === 0 && entry.extraPoints === 0 && entry.points === 30 && entry.accumulatedPoints === 90).to.be.true;
 
     });
 });
