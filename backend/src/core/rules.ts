@@ -100,16 +100,17 @@ export function getHighestCardInTrickRule(trick: Trick) : ITrickInfo {
 
 export function getPoints(estimatedNrOfTricks: number, realNrOfTricks: number, round: number): number {
     let points = -1;
-    if (estimatedNrOfTricks === 0 && estimatedNrOfTricks === realNrOfTricks) {
-        points = round * 10;
-    }
-    else if (estimatedNrOfTricks === 0 && estimatedNrOfTricks !== realNrOfTricks) {
-        points = round * -10;
+    if (estimatedNrOfTricks === 0) {
+        if (estimatedNrOfTricks === realNrOfTricks) {
+            points = round * 10;
+        } else {
+            points = round * -10;
+        }
     }
     else if (estimatedNrOfTricks === realNrOfTricks) {
         points = estimatedNrOfTricks * 20;
     } 
-    else if (estimatedNrOfTricks !== realNrOfTricks) {
+    else {
         points = Math.abs(estimatedNrOfTricks - realNrOfTricks) * -10;
     }
     return points;
