@@ -8,6 +8,8 @@ import { expect } from 'chai';
 import { EstimatePhase } from '@core/estimatePhase';
 import { Phase } from '@core/phase';
 import { PlayPhase } from '@core/playPhase';
+import { fillCollection } from '@helper/create';
+import { Hand } from '@core/hand';
 
 const p1 = new Player('Bob');
 const p2 = new Player('Anna');
@@ -45,9 +47,14 @@ describe('Game', () => {
 
     it('game should start with round 1 and estimating phase', (done) => {
         const g = initGame([p1, p2]);
-        const s = g.phase$.subscribe((p: Phase) => {
-            expect(p instanceof EstimatePhase).to.be.true;
+        let thereWasAnotherPhaseBefore = false;
+        const pp = g.getPhase$(PlayPhase).subscribe((p: PlayPhase) => {
+            thereWasAnotherPhaseBefore = true;
+            pp.unsubscribe();
+        })
+        const s = g.getPhase$(EstimatePhase).subscribe((p: EstimatePhase) => {
             expect(p.getRound()).to.equal(1);
+            expect(thereWasAnotherPhaseBefore).to.be.false;
             s.unsubscribe();
             done();
         })
@@ -57,21 +64,33 @@ describe('Game', () => {
     it('if all players have estimated, the phase should switch to playing', (done) => {
         const g = initGame([p1, p2]);
         let estimatePhaseHappened = false;
-
-        const s = g.phase$.subscribe( (p: Phase) => {
-            if (p instanceof EstimatePhase) {
-                estimatePhaseHappened = true;
-                const ph = (p as EstimatePhase);
-                ph.estimate(p1, 0);
-                ph.estimate(p2, 1);
-            }
-            if (p instanceof PlayPhase) {
-                expect(estimatePhaseHappened).to.be.true;
-                s.unsubscribe();
-                done();
-            }
-
-        })
+        const ep = g.getPhase$(EstimatePhase).subscribe( (p: EstimatePhase) => {
+            estimatePhaseHappened = true;
+            p.estimate(p1, 0);
+            p.estimate(p2, 1);
+            ep.unsubscribe();
+        });
+        const pp = g.getPhase$(PlayPhase).subscribe( (p: PlayPhase) => {
+            expect(estimatePhaseHappened).to.be.true;
+            pp.unsubscribe();
+            done();
+        });
         g.start();
     })
+
+    /*it('should provide the correct points during a game', (done) => {
+        const g = initGame([p1, p2]);
+        g.start();
+        g.getPhase$(PlayPhase);
+        /*p1.hand = fillCollection(Hand, {cardCodes: 'cy1'});
+        p2.hand = fillCollection(Hand, {cardCodes: 'p'});
+
+        const s = g.phase$.subscribe((p: Phase) => {
+            if (p instanceof EstimatePhase) {
+                const ph = (p as EstimatePhase);
+                ph.estimate(p1, 1);
+                
+            }
+        });
+    });*/
 });

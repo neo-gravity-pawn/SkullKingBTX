@@ -1,7 +1,17 @@
-import { 
-    NotEnoughPlayersError } from './error';
+// IDEA: have the score board separate and update it depending
+// on phase outcome
+// if the playphase starts: set the estimates
+// if a trick is completed: update the points
+// question:
+// should points be accumulated on the scoreboard
+// or in the game and added at the end? (i guess in the scoreboard, as it allows to show
+// intermediate results)
+// kind of an "add trick function" should be added to scoreboard
+
+import { NotEnoughPlayersError } from './error';
 import { Player } from "@core/player";
-import { merge, Subject, Subscription } from 'rxjs';
+import { merge, Observable, Subject, Subscription } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { Phase } from './phase';
 import { EstimatePhase } from './estimatePhase';
 import { PlayPhase } from './playPhase';
@@ -13,7 +23,6 @@ export class Game {
     private phases!: Array<Phase>;
     private phaseFinishedSubscription!: Subscription;
     private phaseCounter = 0;
-    public phase$ = this.phaseSubject.asObservable();
 
     get numberOfPlayers() {
         return this.players.length;
@@ -51,6 +60,13 @@ export class Game {
         const phase = this.phases[this.phaseCounter];
         phase.initForRound(this.round);
         this.phaseSubject.next(phase);
+    }
+
+    public getPhase$<T>(c : {new(...args: any[]): T}): Observable<T> {
+        return this.phaseSubject.asObservable().pipe(
+            filter(e => e instanceof c),
+            map(e => (e as unknown as T))
+        );
     }
 
 }
