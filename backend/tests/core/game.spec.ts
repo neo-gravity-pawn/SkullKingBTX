@@ -10,6 +10,7 @@ import { Phase } from '@core/phase';
 import { PlayPhase } from '@core/playPhase';
 import { fillCollection } from '@helper/create';
 import { Hand } from '@core/hand';
+import { ScoreBoard } from '@core/scoreBoard';
 
 const p1 = new Player('Bob');
 const p2 = new Player('Anna');
@@ -78,19 +79,30 @@ describe('Game', () => {
         g.start();
     })
 
-    /*it('should provide the correct points during a game', (done) => {
+    it('should provide the correct points during a game', (done) => {
         const g = initGame([p1, p2]);
         g.start();
         g.getPhase$(PlayPhase);
-        /*p1.hand = fillCollection(Hand, {cardCodes: 'cy1'});
+        p1.hand = fillCollection(Hand, {cardCodes: 'cy1'});
         p2.hand = fillCollection(Hand, {cardCodes: 'p'});
 
-        const s = g.phase$.subscribe((p: Phase) => {
-            if (p instanceof EstimatePhase) {
-                const ph = (p as EstimatePhase);
-                ph.estimate(p1, 1);
-                
-            }
+        const ep = g.getPhase$(EstimatePhase).subscribe((p: EstimatePhase) => {
+            p.estimate(p1, 1);
+            p.estimate(p2, 1);
         });
-    });*/
+        const pp = g.getPhase$(PlayPhase).subscribe((p: PlayPhase) => {
+            p.play(p1, 0);
+            p.play(p2, 0);
+        });
+        const su = g.scoreBoardUpdate$.subscribe((sb: ScoreBoard) => {
+            expect(sb.getRound()).to.equal(1);
+            expect(sb.getEntry(p1, sb.getRound()).points).to.equal(-10);
+            expect(sb.getEntry(p2, sb.getRound()).points).to.equal(20);
+            ep.unsubscribe();
+            pp.unsubscribe();
+            su.unsubscribe();
+            done();
+        });
+        
+    });
 });

@@ -15,6 +15,7 @@ import { filter, map } from 'rxjs/operators';
 import { Phase } from './phase';
 import { EstimatePhase } from './estimatePhase';
 import { PlayPhase } from './playPhase';
+import { ScoreBoard } from './scoreBoard';
 
 export class Game {
     private players = Array<Player>();
@@ -23,6 +24,8 @@ export class Game {
     private phases!: Array<Phase>;
     private phaseFinishedSubscription!: Subscription;
     private phaseCounter = 0;
+    private scoreBoardSubject = new Subject<ScoreBoard>();
+    public scoreBoardUpdate$ = this.scoreBoardSubject.asObservable();
 
     get numberOfPlayers() {
         return this.players.length;
@@ -68,5 +71,4 @@ export class Game {
             map(e => (e as unknown as T))
         );
     }
-
 }

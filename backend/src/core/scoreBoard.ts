@@ -43,6 +43,10 @@ export class ScoreBoard {
         this.round = round;
     }
 
+    public getRound() {
+        return this.round;
+    }
+
     private getEntriesForPlayer(player: Player): Array<IPlayerScoreEntry> {
         const info = this.board.filter(e => e.player === player)[0];
         if (typeof(info) === 'undefined') {

@@ -21,9 +21,11 @@ describe('ScoreBoard', () => {
     it('should provide option to set / get estimates for given round', () => {
         const sb = new ScoreBoard([p1, p2]);
         sb.setRound(1);
+        expect(sb.getRound()).to.equal(1);
         sb.setEstimate(p1, 1);
         sb.setEstimate(p2, 0);
         sb.setRound(3);
+        expect(sb.getRound()).to.equal(3);
         sb.setEstimate(p1, 2);
         sb.setEstimate(p2, 2);
         let entry: IPlayerScoreEntry;
