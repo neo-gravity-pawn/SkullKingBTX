@@ -24,26 +24,30 @@ export class Game {
     private phases!: Array<Phase>;
     private phaseFinishedSubscription!: Subscription;
     private phaseCounter = 0;
+    private scoreBoard!: ScoreBoard;
     private scoreBoardSubject = new Subject<ScoreBoard>();
     public scoreBoardUpdate$ = this.scoreBoardSubject.asObservable();
 
-    get numberOfPlayers() {
+    get numberOfPlayers(): number {
         return this.players.length;
     }
 
-    addPlayer(player: Player) {
+    addPlayer(player: Player): void {
        this.players.push(player); 
     }
 
-    public start() {
+    public start(): void {
         if (this.numberOfPlayers < 2) {
             throw new NotEnoughPlayersError(this.numberOfPlayers);
         }
+        this.scoreBoard = new ScoreBoard(this.players);
+        this.scoreBoard.setRound(this.round);
         this.setupPhases();
         this.initCurrentPhase();
+
     }
 
-    private setupPhases() {
+    private setupPhases(): void {
         this.phaseCounter = 0;
         this.phases = [
             new EstimatePhase(this.players),
@@ -53,16 +57,32 @@ export class Game {
         this.phaseFinishedSubscription = merge(
             this.phases[0].finishedForCurrentRound$,
             this.phases[1].finishedForCurrentRound$
-        ).subscribe( _ => {
+        ).subscribe( (phase: Phase) => { // on phase end
+            this.onPhaseEnd(phase);
             this.phaseCounter += 1;
             this.initCurrentPhase();
         })
     }
 
-    private initCurrentPhase() {
+    private initCurrentPhase(): void {
         const phase = this.phases[this.phaseCounter];
         phase.initForRound(this.round);
         this.phaseSubject.next(phase);
+    }
+
+    private onPhaseEnd(phase: Phase): void {
+        this.ifPhaseIs(EstimatePhase, phase, (phase: EstimatePhase) => {
+            this.players.forEach((player: Player) => {
+                this.scoreBoard.setEstimate(player, phase.getEstimateForPlayer(player));
+            })
+            this.scoreBoardSubject.next(this.scoreBoard);
+        })
+    }
+
+    private ifPhaseIs<T>(c : {new(...args: any[]): T}, phase: Phase, f: (phase: T) => void) {
+        if (phase instanceof c) {
+            f(phase as unknown as T);
+        }
     }
 
     public getPhase$<T>(c : {new(...args: any[]): T}): Observable<T> {
