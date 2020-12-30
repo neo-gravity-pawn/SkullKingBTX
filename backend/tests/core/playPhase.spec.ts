@@ -5,7 +5,7 @@ import { Player } from '@core/player';
 import { Hand } from '@core/hand';
 import { NotActivePlayerError, PhaseNotInitializedError, PlayerNotRegisteredError } from '@core/error';
 import { fillCollection } from '@helper/create';
-import { ITrickInfo } from '@core/rules';
+import { Phase } from '@core/phase';
 
 const p1 = new Player('Bob');
 const p2 = new Player('Lisa');
@@ -116,7 +116,7 @@ describe('playPhase', () => {
 
     it('should provide an finished observer', (done) => {
         const phase = new PlayPhase([p1, p2]);
-        const s = phase.finishedForCurrentRound$.subscribe( (_: any) => {
+        const s = phase.finishedForCurrentRound$.subscribe( (p: Phase) => {
             s.unsubscribe();
             done();
         })

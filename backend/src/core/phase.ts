@@ -8,7 +8,7 @@ import { Subject } from "rxjs";
 
 export class Phase {
     
-    private finishedSubject = new Subject();    
+    private finishedSubject = new Subject<Phase>();    
     public finishedForCurrentRound$ = this.finishedSubject.asObservable();
     protected round = 0;
 
@@ -52,7 +52,7 @@ export class Phase {
     }
 
     protected finishCurrentPhase() {
-        this.finishedSubject.next();
+        this.finishedSubject.next(this);
     }
 
 }
