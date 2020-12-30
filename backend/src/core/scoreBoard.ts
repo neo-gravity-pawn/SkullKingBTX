@@ -57,15 +57,20 @@ export class ScoreBoard {
 
     public setEstimate(player: Player, estimate: number) {
         const entries = this.getEntriesForPlayer(player);
+        this.checkRound(this.round);
         entries[this.round-1].estimate = estimate;
     }
 
     public getEntry(player: Player, round: number) {
         const entries = this.getEntriesForPlayer(player);
+        this.checkRound(round);
+        return entries[round-1];
+    }
+
+    private checkRound(round: number) {
         if (round < 1 || round > this.maxNrOfRounds) {
             throw new RoundOutsideRangeError(round);
         }
-        return entries[round-1];
     }
 
     public setResult(player: Player, estimatedNumberOfTrick: number, realNumberOfTricks: number, extraPoints: number) {

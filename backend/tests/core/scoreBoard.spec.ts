@@ -8,6 +8,12 @@ const p1 = new Player('Bob');
 const p2 = new Player('Lisa');
 const p3 = new Player('Frank');
 describe('ScoreBoard', () => {
+    it('should check if round is valid', () => {
+        const sb = new ScoreBoard([p1, p2]);
+        expect(() => {
+            sb.setEstimate(p1,1)
+        }).to.throw(RoundOutsideRangeError);
+    })
     it('should check if player is valid', () => {
         const sb = new ScoreBoard([p1, p2]);
         sb.setRound(1);
