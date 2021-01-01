@@ -29,7 +29,7 @@ export class ScoreBoard {
             for (let i = 0; i<this.maxNrOfRounds; i++) {
                entries.push({
                    estimate: -1,
-                   result: -1,
+                   result: 0,
                    extraPoints: 0,
                    points: 0,
                    accumulatedPoints: 0
@@ -73,13 +73,23 @@ export class ScoreBoard {
         }
     }
 
-    public setResult(player: Player, estimatedNumberOfTrick: number, realNumberOfTricks: number, extraPoints: number) {
+    public enterTrick(player: Player, extraPoints: number) {
         const entry = this.getEntry(player, this.round);
-        entry.estimate = estimatedNumberOfTrick;
-        entry.result = realNumberOfTricks;
-        entry.extraPoints = estimatedNumberOfTrick === realNumberOfTricks ? extraPoints : 0;
-        entry.points = getPoints(estimatedNumberOfTrick, realNumberOfTricks, this.round) + entry.extraPoints;
+        entry.result += 1;
+        entry.extraPoints += extraPoints;
+        this.updatePoints(player, entry);
+    }
+
+    private updatePoints(player: Player, entry: IPlayerScoreEntry) {
+        const addedExtraPoints = (entry.estimate === entry.result) ? entry.extraPoints : 0;
+        entry.points = getPoints(entry.estimate, entry.result, this.round) + addedExtraPoints;
         this.updateAccumulatedPoints(player);
+    }
+
+    public finishRound() {
+        this.players.forEach( player => {
+            this.updatePoints(player, this.getEntry(player, this.round));
+        })
     }
     
     private updateAccumulatedPoints(player: Player) {
