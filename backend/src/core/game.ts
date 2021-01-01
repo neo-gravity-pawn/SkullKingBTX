@@ -64,7 +64,7 @@ export class Game {
     private initCurrentPhase(): void {
         const phase = this.phases[this.phaseCounter];
         phase.initForRound(this.round);
-        this.phaseSubject.next(phase);
+        setTimeout(_ => this.phaseSubject.next(phase), 0);
     }
 
     private onPhaseEnd(phase: Phase): void {
