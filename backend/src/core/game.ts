@@ -1,73 +1,95 @@
-import { 
-    NotEnoughPlayersError } from './error';
+import { NotEnoughPlayersError } from './error';
 import { Player } from "@core/player";
-import { Subject } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { merge, Observable, Subject, Subscription } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { Phase } from './phase';
 import { EstimatePhase } from './estimatePhase';
-import { PlayPhase } from './playPhase';
-
-export enum GamePhase {
-    estimate = 'ESTIMATING',
-    play = 'PLAYING'
-}
-
-export interface IPhaseInfo {
-    phaseType: GamePhase,
-    phase: Phase
-}
+import { ITrickResult, PlayPhase } from './playPhase';
+import { ScoreBoard } from './scoreBoard';
 
 export class Game {
     private players = Array<Player>();
     private round = 1;
-    private currentPhase!: Phase;
-    private phaseSubject = new Subject<IPhaseInfo>();
-    private estimatePhase!: EstimatePhase;
-    private playPhase!: PlayPhase;
-    private currentPhaseFinished!: Promise<any>;
-    public phase$ = this.phaseSubject.asObservable();
+    private phaseSubject = new Subject<Phase>();
+    private phases!: Array<Phase>;
+    private phaseFinishedSubscription!: Subscription;
+    private trickFinishedSubscription!: Subscription;
+    private phaseCounter = 0;
+    private scoreBoard!: ScoreBoard;
+    private scoreBoardSubject = new Subject<ScoreBoard>();
+    public scoreBoardUpdate$ = this.scoreBoardSubject.asObservable();
 
-    get numberOfPlayers() {
+    get numberOfPlayers(): number {
         return this.players.length;
     }
 
-    addPlayer(player: Player) {
+    addPlayer(player: Player): void {
        this.players.push(player); 
     }
 
-    public start() {
+    public start(): void {
         if (this.numberOfPlayers < 2) {
             throw new NotEnoughPlayersError(this.numberOfPlayers);
         }
+        this.scoreBoard = new ScoreBoard(this.players);
+        this.scoreBoard.setRound(this.round);
         this.setupPhases();
-        this.initEstimatePhase();
-        // this.initPlayPhase();
+        this.initCurrentPhase();
     }
 
-    private setupPhases() {
-        this.estimatePhase = new EstimatePhase(this.players);
-        this.playPhase = new PlayPhase(this.players);
-    }
-
-    private async initEstimatePhase() {
-        this.currentPhase = this.estimatePhase;
-        this.currentPhase.finishedForCurrentRound$.subscribe( _ => {
-            this.initPlayPhase();
+    private setupPhases(): void {
+        this.phaseCounter = 0;
+        this.phases = [
+            new EstimatePhase(this.players),
+            new PlayPhase(this.players),
+        ]
+        this.phaseFinishedSubscription ? this.phaseFinishedSubscription.unsubscribe() : null;
+        this.phaseFinishedSubscription = merge(
+            this.phases[0].finishedForCurrentRound$,
+            this.phases[1].finishedForCurrentRound$
+        ).subscribe( (phase: Phase) => {
+            this.onPhaseEnd(phase);
+            this.phaseCounter += 1;
+            this.phaseCounter = this.phaseCounter % this.phases.length;
+            this.initCurrentPhase();
         })
-        this.setupCurrentPhase(GamePhase.estimate);
-
-        // await this.currentPhaseFinished;
+        const pp = this.phases[1] as PlayPhase;
+        this.trickFinishedSubscription ? this.trickFinishedSubscription.unsubscribe() : null;
+        this.trickFinishedSubscription = pp.currentTrickComplete$.subscribe( (result: ITrickResult) => {
+            this.scoreBoard.enterTrick(result.winningPlayer, result.extraPoints);
+            this.scoreBoardSubject.next(this.scoreBoard);
+        })
     }
 
-    private initPlayPhase() {
-        this.currentPhase = this.playPhase;
-        this.setupCurrentPhase(GamePhase.play);
+    private initCurrentPhase(): void {
+        const phase = this.phases[this.phaseCounter];
+        phase.initForRound(this.round);
+        this.phaseSubject.next(phase);
     }
 
-    private setupCurrentPhase(phaseType: GamePhase) {
-        this.currentPhase.initForRound(this.round);
-        this.currentPhaseFinished = this.currentPhase.finishedForCurrentRound$.pipe(take(1)).toPromise();
-        this.phaseSubject.next({phaseType, phase: this.currentPhase});
+    private onPhaseEnd(phase: Phase): void {
+        this.ifPhaseIs(EstimatePhase, phase, (phase: EstimatePhase) => {
+            this.players.forEach((player: Player) => {
+                this.scoreBoard.setEstimate(player, phase.getEstimateForPlayer(player));
+            })
+            this.scoreBoardSubject.next(this.scoreBoard);
+        })
+        this.ifPhaseIs(PlayPhase, phase, (phase: PlayPhase) => {
+            this.round += 1;
+            this.scoreBoard.setRound(this.round);
+        })
     }
 
+    private ifPhaseIs<T>(c : {new(...args: any[]): T}, phase: Phase, f: (phase: T) => void) {
+        if (phase instanceof c) {
+            f(phase as unknown as T);
+        }
+    }
+
+    public getPhase$<T>(c : {new(...args: any[]): T}): Observable<T> {
+        return this.phaseSubject.asObservable().pipe(
+            filter(e => e instanceof c),
+            map(e => (e as unknown as T))
+        );
+    }
 }

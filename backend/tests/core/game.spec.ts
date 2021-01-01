@@ -1,15 +1,16 @@
 import { 
-    NotActivePlayerError,
-    NotEnoughPlayersError,
-    PlayerNotRegisteredError,
-    EstimateOutsideRangeError,
-    PlayerHasAlreadyEstimatedError
+    NotEnoughPlayersError
 } from '@core/error';
 import 'mocha';
-import { Game, GamePhase, IPhaseInfo } from '@core/game';
+import { Game } from '@core/game';
 import { Player } from '@core/player';
 import { expect } from 'chai';
 import { EstimatePhase } from '@core/estimatePhase';
+import { Phase } from '@core/phase';
+import { ITrickResult, PlayPhase } from '@core/playPhase';
+import { fillCollection } from '@helper/create';
+import { Hand } from '@core/hand';
+import { ScoreBoard } from '@core/scoreBoard';
 
 const p1 = new Player('Bob');
 const p2 = new Player('Anna');
@@ -30,7 +31,6 @@ describe('Game', () => {
         expect(g.numberOfPlayers).to.equal(1);
         g.addPlayer(p2);
         expect(g.numberOfPlayers).to.equal(2);
-        //expect(g.registeredPlayers).to.eql([p1, p2]);
     })
 
     it('should be startable if at least two players are added', () => {
@@ -48,10 +48,14 @@ describe('Game', () => {
 
     it('game should start with round 1 and estimating phase', (done) => {
         const g = initGame([p1, p2]);
-        const s = g.phase$.subscribe((i: IPhaseInfo) => {
-            expect(i.phase instanceof EstimatePhase).to.be.true;
-            expect(i.phaseType).to.equal(GamePhase.estimate);
-            expect(i.phase.getRound()).to.equal(1);
+        let thereWasAnotherPhaseBefore = false;
+        const pp = g.getPhase$(PlayPhase).subscribe((p: PlayPhase) => {
+            thereWasAnotherPhaseBefore = true;
+            pp.unsubscribe();
+        })
+        const s = g.getPhase$(EstimatePhase).subscribe((p: EstimatePhase) => {
+            expect(p.getRound()).to.equal(1);
+            expect(thereWasAnotherPhaseBefore).to.be.false;
             s.unsubscribe();
             done();
         })
@@ -61,23 +65,55 @@ describe('Game', () => {
     it('if all players have estimated, the phase should switch to playing', (done) => {
         const g = initGame([p1, p2]);
         let estimatePhaseHappened = false;
-
-        const s = g.phase$.subscribe( (i: IPhaseInfo) => {
-            if (i.phaseType === GamePhase.estimate) {
-                estimatePhaseHappened = true;
-                const p = (i.phase as EstimatePhase);
-                p.estimate(p1, 0);
-                p.estimate(p2, 1);
-                console.log("CHECKED");
-
-            }
-            if (i.phaseType === GamePhase.play) {
-                expect(estimatePhaseHappened).to.be.true;
-                s.unsubscribe();
-                done();
-            }
-
-        })
+        const ep = g.getPhase$(EstimatePhase).subscribe( (p: EstimatePhase) => {
+            estimatePhaseHappened = true;
+            p.estimate(p1, 0);
+            p.estimate(p2, 1);
+            ep.unsubscribe();
+        });
+        const pp = g.getPhase$(PlayPhase).subscribe( (p: PlayPhase) => {
+            expect(estimatePhaseHappened).to.be.true;
+            pp.unsubscribe();
+            done();
+        });
         g.start();
     })
+
+    it('should provide the points during a game', (done) => {
+        const g = initGame([p1, p2]);
+        let updateCounter = 0;
+        let winner: Player;
+        let looser: Player;
+
+        const ep = g.getPhase$(EstimatePhase).subscribe((p: EstimatePhase) => {
+            p.estimate(p1, 1);
+            p.estimate(p2, 1);
+        });
+        const pp = g.getPhase$(PlayPhase).subscribe((p: PlayPhase) => {
+            p1.hand = fillCollection(Hand, {cardCodes: 'cy1'});
+            p2.hand = fillCollection(Hand, {cardCodes: 'p'});
+            p.play(p1, 0);
+            p.play(p2, 0);
+        });
+        const su = g.scoreBoardUpdate$.subscribe((sb: ScoreBoard) => {
+            if (updateCounter === 0) {
+                expect(sb.getEntry(p1, sb.getRound()).estimate).to.equal(1);
+                expect(sb.getEntry(p2, sb.getRound()).estimate).to.equal(1);  
+                updateCounter += 1;            
+            }
+            else if (updateCounter === 1) {
+                expect(sb.getRound()).to.equal(1);
+                expect(sb.getEntry(p1, 1).points).to.equal(-10);
+                expect(sb.getEntry(p2, 1).points).to.equal(20);
+                ep.unsubscribe();
+                pp.unsubscribe();
+                su.unsubscribe();
+                done();
+            }
+        });
+
+
+        g.start();
+        
+    });
 });

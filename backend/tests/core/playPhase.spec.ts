@@ -1,10 +1,11 @@
 import { expect } from 'chai';
-import { PlayPhase } from '@core/playPhase';
+import { ITrickResult, PlayPhase } from '@core/playPhase';
 import 'mocha';
 import { Player } from '@core/player';
 import { Hand } from '@core/hand';
 import { NotActivePlayerError, PhaseNotInitializedError, PlayerNotRegisteredError } from '@core/error';
 import { fillCollection } from '@helper/create';
+import { Phase } from '@core/phase';
 
 const p1 = new Player('Bob');
 const p2 = new Player('Lisa');
@@ -78,17 +79,21 @@ describe('playPhase', () => {
         expect(p2.hand.getNumberOfCards()).to.equal(7);
     })
 
-    it ('should inform if a trick is complete and set active player', (done) => {
+    it ('should inform if a trick is complete, provide info and set active player', (done) => {
         
         const phase = new PlayPhase([p1, p2, p3]);
         let trickCounter = 0;
-        const s = phase.currentTrickComplete$.subscribe( (_: any) => {
+        const s = phase.currentTrickComplete$.subscribe( (info: ITrickResult) => {
             trickCounter += 1;
             if (trickCounter === 1) {
                 expect(phase.getActivePlayer()).to.equal(p3);
+                expect(info.winningPlayer).to.equal(p3);
+                expect(info.extraPoints).to.equal(0);
             }
             if (trickCounter === 2) {
                 expect(phase.getActivePlayer()).to.equal(p1);
+                expect(info.winningPlayer).to.equal(p1);
+                expect(info.extraPoints).to.equal(0);
             }
             if (trickCounter === 2) {
                 s.unsubscribe();
@@ -111,7 +116,7 @@ describe('playPhase', () => {
 
     it('should provide an finished observer', (done) => {
         const phase = new PlayPhase([p1, p2]);
-        const s = phase.finishedForCurrentRound$.subscribe( (_: any) => {
+        const s = phase.finishedForCurrentRound$.subscribe( (p: Phase) => {
             s.unsubscribe();
             done();
         })

@@ -3,7 +3,7 @@ import { MutableCard } from '@core/mutableCard';
 import { expect } from 'chai';
 import 'mocha';
 import { CardCollection } from '@core/cardCollection';
-import { canBeAddedToTrickRule, getHighestCardInTrickRule } from '@core/rules.ts';
+import { canBeAddedToTrickRule, getHighestCardInTrickRule, getPoints } from '@core/rules.ts';
 import { cc, fillCollection } from '@helper/create';
 import { Trick } from '@core/trick';
 import { CardCollectionIndexOutsideRangeError } from '@core/error';
@@ -153,5 +153,18 @@ describe('Rules - getHighestCardInTrick', () => {
         expect(t.getPlayerForCard(getHighestCardInTrickRule(t).highestCardIndex)).to.eql(p6);
         t.addCard(cc('s'), p7);
         expect(t.getPlayerForCard(getHighestCardInTrickRule(t).highestCardIndex)).to.eql(p4); 
+    })
+})
+
+describe ('Rules - getPoints', () => {
+    it('should give the correct points', () => {
+        expect(getPoints(2,2,4)).to.equal(40);
+        expect(getPoints(3,1,7)).to.equal(-20);
+        expect(getPoints(2,3,7)).to.equal(-10);
+        expect(getPoints(0,0,5)).to.equal(50);
+        expect(getPoints(0,0,8)).to.equal(80);
+        expect(getPoints(0,1,5)).to.equal(-50);
+        expect(getPoints(0,3,8)).to.equal(-80);
+
     })
 })
