@@ -57,18 +57,15 @@ describe('ScoreBoard', () => {
         sb.setEstimate(p1, 1);
         sb.setEstimate(p2, 1);
         sb.enterTrick(p1, 0); // p1 20, p2 -10
-        sb.finishRound();
         sb.setRound(2);
         sb.setEstimate(p1, 2);
         sb.setEstimate(p2, 1);
         sb.enterTrick(p1, 0);
         sb.enterTrick(p2, 50); // p1 -10, p2 70
-        sb.finishRound();
         sb.setRound(3);
         sb.setEstimate(p1, 1);
         sb.setEstimate(p2, 0);
         sb.enterTrick(p1, 30); // p1 50, p2 30
-        sb.finishRound();
         entry = sb.getEntry(p1, 1);
         expect(entry.estimate === 1 && entry.result === 1 && entry.extraPoints === 0 && entry.points === 20 && entry.accumulatedPoints === 20).to.be.true;
         entry = sb.getEntry(p2, 1);

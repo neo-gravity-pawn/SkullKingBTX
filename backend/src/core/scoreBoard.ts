@@ -77,7 +77,8 @@ export class ScoreBoard {
         const entry = this.getEntry(player, this.round);
         entry.result += 1;
         entry.extraPoints += extraPoints;
-        this.updatePoints(player, entry);
+        this.updateAllPoints();
+        // this.updatePoints(player, entry);
     }
 
     private updatePoints(player: Player, entry: IPlayerScoreEntry) {
@@ -86,7 +87,7 @@ export class ScoreBoard {
         this.updateAccumulatedPoints(player);
     }
 
-    public finishRound() {
+    private updateAllPoints() {
         this.players.forEach( player => {
             this.updatePoints(player, this.getEntry(player, this.round));
         })
