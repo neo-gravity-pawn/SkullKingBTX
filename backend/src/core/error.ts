@@ -1,5 +1,5 @@
 import { Player } from './player';
-import { CardType, CardColor } from './card';
+import { CardType, CardColor, Card } from './card';
 
 class BaseError extends Error {
     constructor(message: string) {
@@ -79,5 +79,11 @@ export class RoundOutsideRangeError extends BaseError {
 export class PhaseNotInitializedError extends BaseError {
     constructor() {
         super(`Phase needs to be initialized for current round`);
+    }
+}
+
+export class CardCannotBePlayedError extends BaseError {
+    constructor(card: Card) {
+        super(`Playing card ${card.color} ${card.value} is violating a rule.`);
     }
 }

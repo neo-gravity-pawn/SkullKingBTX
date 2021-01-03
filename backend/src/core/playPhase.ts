@@ -8,6 +8,7 @@
 import { Player } from '@core/player';
 import { Phase } from '@core/phase';
 import { 
+    CardCannotBePlayedError,
     NotActivePlayerError} from '@core/error';
 import { Deck } from './deck';
 import { Trick } from './trick';
@@ -45,6 +46,8 @@ export class PlayPhase extends Phase{
         }
         if (canBeAddedToTrickRule(player.hand, handCardIndex, this.trick)) {
             this.trick.addCard(player.hand.removeCard(handCardIndex), player);
+        } else {
+            throw new CardCannotBePlayedError(player.hand.getCard(handCardIndex));
         }
         this.setNextPlayer();
         this.checkIfTrickIsComplete();

@@ -3,7 +3,7 @@ import { ITrickResult, PlayPhase } from '@core/playPhase';
 import 'mocha';
 import { Player } from '@core/player';
 import { Hand } from '@core/hand';
-import { NotActivePlayerError, PhaseNotInitializedError, PlayerNotRegisteredError } from '@core/error';
+import { CardCannotBePlayedError, NotActivePlayerError, PhaseNotInitializedError, PlayerNotRegisteredError } from '@core/error';
 import { fillCollection } from '@helper/create';
 import { Phase } from '@core/phase';
 
@@ -11,7 +11,7 @@ const p1 = new Player('Bob');
 const p2 = new Player('Lisa');
 const p3 = new Player('Heinz');
 
-describe('playPhase', () => {
+describe('PlayPhase', () => {
     it('should check if phase was initialized', () => {
         const phase = new PlayPhase([p1, p2]);
         expect(() => {
@@ -56,6 +56,18 @@ describe('playPhase', () => {
                 phase.play(r.valid, 0);
             }).to.not.throw();
         })
+    })
+
+    it ('should check, if a card can be actually played', () => {
+        const phase = new PlayPhase([p1, p2]);
+        phase.initForRound(1);
+        p1.hand = fillCollection(Hand, {cardCodes:'cr1,e'});
+        p2.hand = fillCollection(Hand, {cardCodes:'cr2,cb10'});
+        phase.play(p1, 0);
+        expect(() => {
+            phase.play(p2, 1);
+        }).to.throw(CardCannotBePlayedError);
+
     })
 
     it('should advance active player after play', () => {
