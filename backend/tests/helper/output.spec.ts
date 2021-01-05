@@ -17,6 +17,6 @@ describe('Output', () => {
     });
     it('should print a card collection', () => {
         const c = fillCollection(CardCollection, {cardCodes: 'cy3,p,t5,e,m,cb11,cr3,x'});
-        expect(createCollectionString(c)).to.equal('(8): y3, p, t5, e, m, b11, r3, sm(p)')
+        expect(createCollectionString(c)).to.equal('(8): y3, p, t5, e, m, b11, r3, sm(p)');
     })
 });

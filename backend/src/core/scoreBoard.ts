@@ -74,6 +74,7 @@ export class ScoreBoard {
     }
 
     public enterTrick(player: Player, extraPoints: number) {
+        this.checkRound(this.round);
         const entry = this.getEntry(player, this.round);
         entry.result += 1;
         entry.extraPoints += extraPoints;

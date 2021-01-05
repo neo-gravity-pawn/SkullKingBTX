@@ -145,7 +145,6 @@ describe('Game', () => {
                 expect(sb.getEntry(p1, 3).accumulatedPoints).to.equal(0);
                 expect(sb.getEntry(p2, 3).accumulatedPoints).to.equal(0);
                 expect(sb.getEntry(p3, 3).accumulatedPoints).to.equal(-10);
-
                 done();
             }
         });
