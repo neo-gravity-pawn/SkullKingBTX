@@ -1,7 +1,6 @@
 import { 
     CardCannotBePlayedError,
-    NotEnoughPlayersError,
-    PlayerHasAlreadyEstimatedError
+    NotEnoughPlayersError
 } from '@core/error';
 import 'mocha';
 import { Game } from '@core/game';
