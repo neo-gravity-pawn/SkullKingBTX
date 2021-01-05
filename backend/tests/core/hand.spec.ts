@@ -1,4 +1,3 @@
-import { printCollection } from '@helper/output';
 import { MutableCard } from '@core/mutableCard';
 import { CardType, CardColor, Card } from '@core/card';
 import { Hand } from '@core/hand';

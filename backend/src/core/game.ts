@@ -17,7 +17,10 @@ export class Game {
     private phaseCounter = 0;
     private scoreBoard!: ScoreBoard;
     private scoreBoardSubject = new Subject<ScoreBoard>();
+    private gameHasEnded = false;
     public scoreBoardUpdate$ = this.scoreBoardSubject.asObservable();
+    private finishedSubject = new Subject();
+    public finished$ = this.finishedSubject.asObservable();
 
     get numberOfPlayers(): number {
         return this.players.length;
@@ -33,6 +36,7 @@ export class Game {
         }
         this.scoreBoard = new ScoreBoard(this.players);
         this.scoreBoard.setRound(this.round);
+        this.gameHasEnded = false;
         this.setupPhases();
         this.initCurrentPhase();
     }
@@ -62,9 +66,12 @@ export class Game {
     }
 
     private initCurrentPhase(): void {
-        const phase = this.phases[this.phaseCounter];
-        phase.initForRound(this.round);
-        setTimeout(_ => this.phaseSubject.next(phase), 0);
+        if (!this.gameHasEnded) {
+            const phase = this.phases[this.phaseCounter];
+            this.scoreBoard.setRound(this.round);
+            phase.initForRound(this.round);
+            setTimeout(_ => this.phaseSubject.next(phase), 0);
+        }
     }
 
     private onPhaseEnd(phase: Phase): void {
@@ -72,11 +79,15 @@ export class Game {
             this.players.forEach((player: Player) => {
                 this.scoreBoard.setEstimate(player, phase.getEstimateForPlayer(player));
             })
-            this.scoreBoardSubject.next(this.scoreBoard);
+            setTimeout(_ => this.scoreBoardSubject.next(this.scoreBoard), 0);
         })
         this.ifPhaseIs(PlayPhase, phase, (phase: PlayPhase) => {
-            this.round += 1;
-            this.scoreBoard.setRound(this.round);
+                if (this.round < 10) {
+                    this.round += 1;
+                } else {
+                    this.gameHasEnded = true;
+                    setTimeout(_ => this.finishedSubject.next(), 0);
+                }
         })
     }
 
