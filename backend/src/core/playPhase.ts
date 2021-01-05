@@ -13,7 +13,7 @@ import {
 import { Deck } from './deck';
 import { Trick } from './trick';
 import { canBeAddedToTrickRule, getHighestCardInTrickRule } from './rules';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 
 
 export interface ITrickResult {
@@ -27,12 +27,22 @@ export class PlayPhase extends Phase{
     private nrOfCompletedTrick = 0;
     private currentTrickCompleteSubject = new Subject<ITrickResult>();
     public currentTrickComplete$ = this.currentTrickCompleteSubject.asObservable();
+    private currentTrickCompletedSubscription!: Subscription;
 
     onInit() {
         this.activePlayer = this.players[(this.round - 1) % this.players.length];
         this.nrOfCompletedTrick = 0;
         this.dealCards();
         this.trick = new Trick();
+        if (this.currentTrickCompletedSubscription) {
+            this.currentTrickCompletedSubscription.unsubscribe();
+        }
+        this.currentTrickCompletedSubscription = this.currentTrickComplete$.subscribe( res => {
+            this.nrOfCompletedTrick += 1;
+            if (this.nrOfCompletedTrick === this.round) {
+                this.finishCurrentPhase();
+            }
+        })
     }
 
     public getActivePlayer() {
@@ -74,14 +84,10 @@ export class PlayPhase extends Phase{
             const info = getHighestCardInTrickRule(this.trick);
             this.activePlayer = this.trick.getPlayerForCard(info.highestCardIndex);
             this.trick = new Trick(); // ATTENTION Trick content is lost
-            this.currentTrickCompleteSubject.next({
+            this.currentTrickCompleteSubject.next({ // FIXME: decoupling this brakes game test!
                 winningPlayer: this.activePlayer, 
                 extraPoints: info.extraPoints
             });
-            this.nrOfCompletedTrick += 1;
-            if (this.nrOfCompletedTrick === this.round) {
-                this.finishCurrentPhase();
-            }
         }
     }
 
