@@ -6,43 +6,40 @@
 // if all finished, counting phase
 
 import { Player } from '@core/player';
-import { Phase } from '@core/phase';
+import { Phase, PhaseEvent } from '@core/phase';
 import { 
     CardCannotBePlayedError,
     NotActivePlayerError} from '@core/error';
 import { Deck } from './deck';
 import { Trick } from './trick';
 import { canBeAddedToTrickRule, getHighestCardInTrickRule } from './rules';
-import { Subject, Subscription } from 'rxjs';
-
 
 export interface ITrickResult {
     winningPlayer: Player,
     extraPoints: number
 }
+
+export class TrickFinishedEvent extends PhaseEvent {
+    constructor(phase: Phase, public trickResult: ITrickResult ) {
+        super(phase);
+    }
+}
+
+export interface IPlayPhaseState {
+    state: string,
+}
+
 export class PlayPhase extends Phase{
 
     private activePlayer!: Player;
     private trick!: Trick;
     private nrOfCompletedTrick = 0;
-    private currentTrickCompleteSubject = new Subject<ITrickResult>();
-    public currentTrickComplete$ = this.currentTrickCompleteSubject.asObservable();
-    private currentTrickCompletedSubscription!: Subscription;
 
     onInit() {
         this.activePlayer = this.players[(this.round - 1) % this.players.length];
         this.nrOfCompletedTrick = 0;
         this.dealCards();
         this.trick = new Trick();
-        if (this.currentTrickCompletedSubscription) {
-            this.currentTrickCompletedSubscription.unsubscribe();
-        }
-        this.currentTrickCompletedSubscription = this.currentTrickComplete$.subscribe( res => {
-            this.nrOfCompletedTrick += 1;
-            if (this.nrOfCompletedTrick === this.round) {
-                this.finishCurrentPhase();
-            }
-        })
     }
 
     public getActivePlayer() {
@@ -59,6 +56,7 @@ export class PlayPhase extends Phase{
         } else {
             throw new CardCannotBePlayedError(player.hand.getCard(handCardIndex));
         }
+        
         this.setNextPlayer();
         this.checkIfTrickIsComplete();
     }
@@ -76,19 +74,25 @@ export class PlayPhase extends Phase{
             for(let r = 0; r < this.round; r++) {
                 player.hand.addCard(deck.removeCard(0))
             }
+            player.hand.sort();
         })
     }
 
     private checkIfTrickIsComplete(): void {
         if (this.trick.getNumberOfCards() === this.players.length) {
             const info = getHighestCardInTrickRule(this.trick);
-            this.activePlayer = this.trick.getPlayerForCard(info.highestCardIndex);
+            const winningPlayer = this.trick.getPlayerForCard(info.highestCardIndex);
             this.trick = new Trick(); // ATTENTION Trick content is lost
-            this.currentTrickCompleteSubject.next({ // FIXME: decoupling this brakes game test!
-                winningPlayer: this.activePlayer, 
+            this.activePlayer = winningPlayer;
+            this.sendEventLater(new TrickFinishedEvent(this, {
+                winningPlayer,
                 extraPoints: info.extraPoints
-            });
+            }))
+            this.nrOfCompletedTrick += 1;
+            if (this.nrOfCompletedTrick === this.round) {
+                this.finishCurrentPhase();
+            }
+
         }
     }
-
 }

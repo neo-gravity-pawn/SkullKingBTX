@@ -3,7 +3,7 @@ import { EstimatePhase } from '@core/estimatePhase';
 import 'mocha';
 import { Player } from '@core/player';
 import { EstimateOutsideRangeError, NotEnoughPlayersError, PhaseNotInitializedError, PlayerHasAlreadyEstimatedError, PlayerNotRegisteredError, RoundOutsideRangeError } from '@core/error';
-import { Phase } from '@core/phase';
+import { Phase, PhaseEvent } from '@core/phase';
 
 const p1 = new Player('Bob');
 const p2 = new Player('Lisa');
@@ -82,8 +82,8 @@ describe('estimatePhase', () => {
 
     it('should provide an finished observer', (done) => {
         const phase = new EstimatePhase([p1, p2]);
-        const s = phase.finishedForCurrentRound$.subscribe( (p: Phase) => {
-            expect(p === phase).to.be.true;
+        const s = phase.event$.subscribe( (event: PhaseEvent) => {
+            expect(event.phase === phase).to.be.true;
             s.unsubscribe();
             done();
         })

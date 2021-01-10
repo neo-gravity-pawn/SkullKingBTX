@@ -1,15 +1,15 @@
 import { expect } from 'chai';
-import { ITrickResult, PlayPhase } from '@core/playPhase';
+import { ITrickResult, PlayPhase, TrickFinishedEvent } from '@core/playPhase';
 import 'mocha';
 import { Player } from '@core/player';
 import { Hand } from '@core/hand';
 import { CardCannotBePlayedError, NotActivePlayerError, PhaseNotInitializedError, PlayerNotRegisteredError } from '@core/error';
 import { fillCollection } from '@helper/create';
-import { Phase } from '@core/phase';
+import { Phase, PhaseEvent, PhaseFinishedEvent } from '@core/phase';
 
-const p1 = new Player('Bob');
-const p2 = new Player('Lisa');
-const p3 = new Player('Heinz');
+const p1 = new Player('Anna');
+const p2 = new Player('Bob');
+const p3 = new Player('Charlie');
 
 describe('PlayPhase', () => {
     it('should check if phase was initialized', () => {
@@ -91,25 +91,32 @@ describe('PlayPhase', () => {
         expect(p2.hand.getNumberOfCards()).to.equal(7);
     })
 
+    const runLater = (fn: any) => {
+        return new Promise<void>(resolve => setTimeout(_ => {fn(); resolve();}, 0));
+    }
+
     it ('should inform if a trick is complete, provide info and set active player', (done) => {
         
         const phase = new PlayPhase([p1, p2, p3]);
         let trickCounter = 0;
-        const s = phase.currentTrickComplete$.subscribe( (info: ITrickResult) => {
-            trickCounter += 1;
-            if (trickCounter === 1) {
-                expect(phase.getActivePlayer()).to.equal(p3);
-                expect(info.winningPlayer).to.equal(p3);
-                expect(info.extraPoints).to.equal(0);
-            }
-            if (trickCounter === 2) {
-                expect(phase.getActivePlayer()).to.equal(p1);
-                expect(info.winningPlayer).to.equal(p1);
-                expect(info.extraPoints).to.equal(0);
-            }
-            if (trickCounter === 2) {
-                s.unsubscribe();
-                done();
+        const s = phase.event$.subscribe( (event: PhaseEvent) => {
+            if (event instanceof TrickFinishedEvent) {
+                const info = event.trickResult;
+                trickCounter += 1;
+                if (trickCounter === 1) {
+                    expect(phase.getActivePlayer()).to.equal(p3);
+                    expect(info.winningPlayer).to.equal(p3);
+                    expect(info.extraPoints).to.equal(0);
+                }
+                if (trickCounter === 2) {
+                    expect(phase.getActivePlayer()).to.equal(p1);
+                    expect(info.winningPlayer).to.equal(p1);
+                    expect(info.extraPoints).to.equal(0);
+                }
+                if (trickCounter === 2) {
+                    s.unsubscribe();
+                    done();
+                }
             }
         })
 
@@ -117,26 +124,28 @@ describe('PlayPhase', () => {
         p2.hand = fillCollection(Hand, {cardCodes: 't13,cr2'});
         p3.hand = fillCollection(Hand, {cardCodes: 'cr13,e'});
         p1.hand = fillCollection(Hand, {cardCodes: 'cr6,p'});
-        phase.play(p2, 1); //cr2
-        phase.play(p3, 0); //cr13
-        phase.play(p1, 0); //cr6
-        phase.play(p3, 0); //e
-        phase.play(p1, 0); //p
-        phase.play(p2, 0); //t13
+        (async () => {
+            await runLater(() => phase.play(p2, 1)); //cr2
+            await runLater(() => phase.play(p3, 0)); //cr13
+            await runLater(() => phase.play(p1, 0)); //cr6
+            await runLater(() => phase.play(p3, 0)); //e
+            await runLater(() => phase.play(p1, 0)); //p
+            await runLater(() => phase.play(p2, 0)); //t13
+        })();
+
     })
     
 
     it('should provide an finished observer', (done) => {
         const phase = new PlayPhase([p1, p2]);
-        const s = phase.finishedForCurrentRound$.subscribe( (p: Phase) => {
-            s.unsubscribe();
-            done();
+        const s = phase.event$.subscribe( (event: PhaseEvent) => {
+            if (event instanceof PhaseFinishedEvent) {
+                s.unsubscribe();
+                done();
+            }
         })
-
         phase.initForRound(1);
         phase.play(p1, 0);
         phase.play(p2, 0);
-
     })
-
 });
