@@ -7,9 +7,9 @@ import { CardCannotBePlayedError, NotActivePlayerError, PhaseNotInitializedError
 import { fillCollection } from '@helper/create';
 import { Phase, PhaseEvent, PhaseFinishedEvent } from '@core/phase';
 
-const p1 = new Player('Bob');
-const p2 = new Player('Lisa');
-const p3 = new Player('Heinz');
+const p1 = new Player('Anna');
+const p2 = new Player('Bob');
+const p3 = new Player('Charlie');
 
 describe('PlayPhase', () => {
     it('should check if phase was initialized', () => {
@@ -91,6 +91,10 @@ describe('PlayPhase', () => {
         expect(p2.hand.getNumberOfCards()).to.equal(7);
     })
 
+    const runLater = (fn: any) => {
+        return new Promise<void>(resolve => setTimeout(_ => {fn(); resolve();}, 0));
+    }
+
     it ('should inform if a trick is complete, provide info and set active player', (done) => {
         
         const phase = new PlayPhase([p1, p2, p3]);
@@ -120,12 +124,15 @@ describe('PlayPhase', () => {
         p2.hand = fillCollection(Hand, {cardCodes: 't13,cr2'});
         p3.hand = fillCollection(Hand, {cardCodes: 'cr13,e'});
         p1.hand = fillCollection(Hand, {cardCodes: 'cr6,p'});
-        phase.play(p2, 1); //cr2
-        phase.play(p3, 0); //cr13
-        phase.play(p1, 0); //cr6
-        phase.play(p3, 0); //e
-        phase.play(p1, 0); //p
-        phase.play(p2, 0); //t13
+        (async () => {
+            await runLater(() => phase.play(p2, 1)); //cr2
+            await runLater(() => phase.play(p3, 0)); //cr13
+            await runLater(() => phase.play(p1, 0)); //cr6
+            await runLater(() => phase.play(p3, 0)); //e
+            await runLater(() => phase.play(p1, 0)); //p
+            await runLater(() => phase.play(p2, 0)); //t13
+        })();
+
     })
     
 
