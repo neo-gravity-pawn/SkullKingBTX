@@ -1,35 +1,38 @@
 import { NotEnoughPlayersError } from './error';
 import { Player } from "@core/player";
-import { merge, Observable, Subject, Subscription } from 'rxjs';
-import { filter, map, share } from 'rxjs/operators';
+import { merge, Subject, Subscription } from 'rxjs';
 import { Phase, PhaseEvent, PhaseFinishedEvent } from './phase';
 import { EstimatePhase } from './estimatePhase';
 import { ITrickResult, PlayPhase, TrickFinishedEvent } from './playPhase';
 import { ScoreBoard } from './scoreBoard';
 
 export class GameEvent {
+    constructor(public scoreBoard: ScoreBoard) {
+    }
 }
 
 export class ScoresUpdatedEvent extends GameEvent {
-    constructor(public scoreBoard: ScoreBoard) {
-        super();
-    }
 }
 
 export class PhaseChangedEvent extends GameEvent {
-    constructor(public newPhase: Phase) {
-        super();
+    constructor(public newPhase: Phase, scoreBoard: ScoreBoard) {
+        super(scoreBoard);
     }
 }
 
-export class GameFinishedEvent extends ScoresUpdatedEvent {
+export class GameFinishedEvent extends GameEvent {
+}
+
+export class TrickCompleteEvent extends GameEvent {
+    constructor(public trickResult: ITrickResult, scoreBoard: ScoreBoard) {
+        super(scoreBoard);
+    }
 }
 
 export class Game {
     private players = Array<Player>();
     private round = 1;
     private maxRounds = 10;
-    private phaseSubject = new Subject<Phase>();
     private phases!: Array<Phase>;
     private phaseEventSubscription!: Subscription;
     private phaseCounter = 0;
@@ -47,7 +50,6 @@ export class Game {
     }
 
     public start(): void {
-
         if (this.numberOfPlayers < 2) {
             throw new NotEnoughPlayersError(this.numberOfPlayers);
         }
@@ -72,14 +74,16 @@ export class Game {
         ).subscribe( (event: PhaseEvent) => {
             if (event instanceof PhaseFinishedEvent) {
                 this.onPhaseEnd(event.phase);
-                this.phaseCounter += 1;
-                this.phaseCounter = this.phaseCounter % this.phases.length;
-                this.initCurrentPhase();
-
+                if (!this.gameHasEnded) {
+                    this.phaseCounter += 1;
+                    this.phaseCounter = this.phaseCounter % this.phases.length;
+                    this.initCurrentPhase();
+                }
             }
             if (event instanceof TrickFinishedEvent) {
                 this.scoreBoard.enterTrick(event.trickResult.winningPlayer, event.trickResult.extraPoints);
                 this.sendEvent(new ScoresUpdatedEvent(this.scoreBoard));
+                this.sendEvent(new TrickCompleteEvent(event.trickResult, this.scoreBoard));
             }
         })
     }
@@ -89,12 +93,10 @@ export class Game {
     }
 
     private initCurrentPhase(): void {
-        if (!this.gameHasEnded) {
-            const phase = this.phases[this.phaseCounter];
-            this.scoreBoard.setRound(this.round);
-            phase.initForRound(this.round);
-            this.sendEvent(new PhaseChangedEvent(phase));
-        }
+        const phase = this.phases[this.phaseCounter];
+        this.scoreBoard.setRound(this.round);
+        phase.initForRound(this.round);
+        this.sendEvent(new PhaseChangedEvent(phase, this.scoreBoard));
     }
 
     private onPhaseEnd(phase: Phase): void {
@@ -104,13 +106,13 @@ export class Game {
             })
             this.sendEvent(new ScoresUpdatedEvent(this.scoreBoard));
         })
-        this.ifPhaseIs(PlayPhase, phase, (phase: PlayPhase) => {
-                if (this.round < this.maxRounds) {
-                    this.round += 1;
-                } else {
-                    this.gameHasEnded = true;
-                    this.sendEvent(new GameFinishedEvent(this.scoreBoard))
-                }
+        this.ifPhaseIs(PlayPhase, phase, _ => {
+            if (this.round < this.maxRounds) {
+                this.round += 1;
+            } else {
+                this.gameHasEnded = true;
+                this.sendEvent(new GameFinishedEvent(this.scoreBoard))
+            }
         })
     }
 

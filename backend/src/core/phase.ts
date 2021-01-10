@@ -64,8 +64,12 @@ export class Phase {
         this.eventSubject.next(event);
     }
 
+    protected sendEventLater(event: PhaseEvent) {
+        setTimeout( _ => this.sendEvent(event), 0);
+    }
+
     protected finishCurrentPhase() {
-        this.eventSubject.next(new PhaseFinishedEvent(this));
+        this.sendEventLater(new PhaseFinishedEvent(this));
     }
 
 }

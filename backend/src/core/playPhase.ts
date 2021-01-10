@@ -84,7 +84,7 @@ export class PlayPhase extends Phase{
             const winningPlayer = this.trick.getPlayerForCard(info.highestCardIndex);
             this.trick = new Trick(); // ATTENTION Trick content is lost
             this.activePlayer = winningPlayer;
-            this.sendEvent(new TrickFinishedEvent(this, {
+            this.sendEventLater(new TrickFinishedEvent(this, {
                 winningPlayer,
                 extraPoints: info.extraPoints
             }))
