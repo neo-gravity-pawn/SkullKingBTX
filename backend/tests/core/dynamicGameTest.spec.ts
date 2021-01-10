@@ -62,10 +62,7 @@ describe('Complete', () => {
 
         es = g.event$.subscribe((event: GameEvent) => {
             const sb = event.scoreBoard;
-            if (event instanceof ScoresUpdatedEvent) {
-                //
-            }
-            else if (event instanceof TrickCompleteEvent) {
+            if (event instanceof TrickCompleteEvent) {
                 console.log(`==> ${event.trickResult.winningPlayer.name} got the trick!`);
                 console.log();
             }
