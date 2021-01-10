@@ -1,11 +1,11 @@
 import { expect } from 'chai';
-import { ITrickResult, PlayPhase } from '@core/playPhase';
+import { ITrickResult, PlayPhase, TrickFinishedEvent } from '@core/playPhase';
 import 'mocha';
 import { Player } from '@core/player';
 import { Hand } from '@core/hand';
 import { CardCannotBePlayedError, NotActivePlayerError, PhaseNotInitializedError, PlayerNotRegisteredError } from '@core/error';
 import { fillCollection } from '@helper/create';
-import { Phase } from '@core/phase';
+import { Phase, PhaseEvent, PhaseFinishedEvent } from '@core/phase';
 
 const p1 = new Player('Bob');
 const p2 = new Player('Lisa');
@@ -95,21 +95,24 @@ describe('PlayPhase', () => {
         
         const phase = new PlayPhase([p1, p2, p3]);
         let trickCounter = 0;
-        const s = phase.currentTrickComplete$.subscribe( (info: ITrickResult) => {
-            trickCounter += 1;
-            if (trickCounter === 1) {
-                expect(phase.getActivePlayer()).to.equal(p3);
-                expect(info.winningPlayer).to.equal(p3);
-                expect(info.extraPoints).to.equal(0);
-            }
-            if (trickCounter === 2) {
-                expect(phase.getActivePlayer()).to.equal(p1);
-                expect(info.winningPlayer).to.equal(p1);
-                expect(info.extraPoints).to.equal(0);
-            }
-            if (trickCounter === 2) {
-                s.unsubscribe();
-                done();
+        const s = phase.event$.subscribe( (event: PhaseEvent) => {
+            if (event instanceof TrickFinishedEvent) {
+                const info = event.trickResult;
+                trickCounter += 1;
+                if (trickCounter === 1) {
+                    expect(phase.getActivePlayer()).to.equal(p3);
+                    expect(info.winningPlayer).to.equal(p3);
+                    expect(info.extraPoints).to.equal(0);
+                }
+                if (trickCounter === 2) {
+                    expect(phase.getActivePlayer()).to.equal(p1);
+                    expect(info.winningPlayer).to.equal(p1);
+                    expect(info.extraPoints).to.equal(0);
+                }
+                if (trickCounter === 2) {
+                    s.unsubscribe();
+                    done();
+                }
             }
         })
 
@@ -128,15 +131,14 @@ describe('PlayPhase', () => {
 
     it('should provide an finished observer', (done) => {
         const phase = new PlayPhase([p1, p2]);
-        const s = phase.finishedForCurrentRound$.subscribe( (p: Phase) => {
-            s.unsubscribe();
-            done();
+        const s = phase.event$.subscribe( (event: PhaseEvent) => {
+            if (event instanceof PhaseFinishedEvent) {
+                s.unsubscribe();
+                done();
+            }
         })
-
         phase.initForRound(1);
         phase.play(p1, 0);
         phase.play(p2, 0);
-
     })
-
 });

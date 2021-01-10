@@ -6,10 +6,19 @@ import {
 import { Player } from "@core/player";
 import { Subject } from "rxjs";
 
+
+export class PhaseEvent {
+    constructor(public phase: Phase) {}
+}
+
+export class PhaseFinishedEvent extends PhaseEvent {
+    
+}
+
 export class Phase {
     
-    private finishedSubject = new Subject<Phase>();    
-    public finishedForCurrentRound$ = this.finishedSubject.asObservable();
+    private eventSubject = new Subject<PhaseEvent>();    
+    public event$ = this.eventSubject.asObservable();
     protected round = 0;
 
     constructor(protected players: Array<Player>) {
@@ -51,8 +60,12 @@ export class Phase {
         }
     }
 
+    protected sendEvent(event: PhaseEvent) {
+        this.eventSubject.next(event);
+    }
+
     protected finishCurrentPhase() {
-        this.finishedSubject.next(this);
+        this.eventSubject.next(new PhaseFinishedEvent(this));
     }
 
 }
