@@ -1,26 +1,42 @@
 import { NotEnoughPlayersError } from './error';
 import { Player } from "@core/player";
 import { merge, Observable, Subject, Subscription } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
-import { Phase } from './phase';
+import { filter, map, share } from 'rxjs/operators';
+import { Phase, PhaseEvent, PhaseFinishedEvent } from './phase';
 import { EstimatePhase } from './estimatePhase';
-import { ITrickResult, PlayPhase } from './playPhase';
+import { ITrickResult, PlayPhase, TrickFinishedEvent } from './playPhase';
 import { ScoreBoard } from './scoreBoard';
+
+export class GameEvent {
+}
+
+export class ScoresUpdatedEvent extends GameEvent {
+    constructor(public scoreBoard: ScoreBoard) {
+        super();
+    }
+}
+
+export class PhaseChangedEvent extends GameEvent {
+    constructor(public newPhase: Phase) {
+        super();
+    }
+}
+
+export class GameFinishedEvent extends ScoresUpdatedEvent {
+}
 
 export class Game {
     private players = Array<Player>();
     private round = 1;
+    private maxRounds = 10;
     private phaseSubject = new Subject<Phase>();
     private phases!: Array<Phase>;
-    private phaseFinishedSubscription!: Subscription;
-    private trickFinishedSubscription!: Subscription;
+    private phaseEventSubscription!: Subscription;
     private phaseCounter = 0;
     private scoreBoard!: ScoreBoard;
-    private scoreBoardSubject = new Subject<ScoreBoard>();
     private gameHasEnded = false;
-    public scoreBoardUpdate$ = this.scoreBoardSubject.asObservable();
-    private finishedSubject = new Subject();
-    public finished$ = this.finishedSubject.asObservable();
+    private eventSubject = new Subject<GameEvent>();
+    public event$ = this.eventSubject.asObservable();
 
     get numberOfPlayers(): number {
         return this.players.length;
@@ -31,9 +47,11 @@ export class Game {
     }
 
     public start(): void {
+
         if (this.numberOfPlayers < 2) {
             throw new NotEnoughPlayersError(this.numberOfPlayers);
         }
+        this.round = 1;
         this.scoreBoard = new ScoreBoard(this.players);
         this.scoreBoard.setRound(this.round);
         this.gameHasEnded = false;
@@ -47,22 +65,27 @@ export class Game {
             new EstimatePhase(this.players),
             new PlayPhase(this.players),
         ]
-        this.phaseFinishedSubscription ? this.phaseFinishedSubscription.unsubscribe() : null;
-        this.phaseFinishedSubscription = merge(
-            this.phases[0].finishedForCurrentRound$,
-            this.phases[1].finishedForCurrentRound$
-        ).subscribe( (phase: Phase) => {
-            this.onPhaseEnd(phase);
-            this.phaseCounter += 1;
-            this.phaseCounter = this.phaseCounter % this.phases.length;
-            this.initCurrentPhase();
+        this.phaseEventSubscription ? this.phaseEventSubscription.unsubscribe() : null;
+        this.phaseEventSubscription = merge(
+            this.phases[0].event$,
+            this.phases[1].event$
+        ).subscribe( (event: PhaseEvent) => {
+            if (event instanceof PhaseFinishedEvent) {
+                this.onPhaseEnd(event.phase);
+                this.phaseCounter += 1;
+                this.phaseCounter = this.phaseCounter % this.phases.length;
+                this.initCurrentPhase();
+
+            }
+            if (event instanceof TrickFinishedEvent) {
+                this.scoreBoard.enterTrick(event.trickResult.winningPlayer, event.trickResult.extraPoints);
+                this.sendEvent(new ScoresUpdatedEvent(this.scoreBoard));
+            }
         })
-        const pp = this.phases[1] as PlayPhase;
-        this.trickFinishedSubscription ? this.trickFinishedSubscription.unsubscribe() : null;
-        this.trickFinishedSubscription = pp.currentTrickComplete$.subscribe( (result: ITrickResult) => {
-            this.scoreBoard.enterTrick(result.winningPlayer, result.extraPoints);
-            this.scoreBoardSubject.next(this.scoreBoard);
-        })
+    }
+
+    private sendEvent(event: GameEvent) {
+        this.eventSubject.next(event);
     }
 
     private initCurrentPhase(): void {
@@ -70,7 +93,7 @@ export class Game {
             const phase = this.phases[this.phaseCounter];
             this.scoreBoard.setRound(this.round);
             phase.initForRound(this.round);
-            setTimeout(_ => this.phaseSubject.next(phase), 0);
+            this.sendEvent(new PhaseChangedEvent(phase));
         }
     }
 
@@ -79,14 +102,14 @@ export class Game {
             this.players.forEach((player: Player) => {
                 this.scoreBoard.setEstimate(player, phase.getEstimateForPlayer(player));
             })
-            setTimeout(_ => this.scoreBoardSubject.next(this.scoreBoard), 0);
+            this.sendEvent(new ScoresUpdatedEvent(this.scoreBoard));
         })
         this.ifPhaseIs(PlayPhase, phase, (phase: PlayPhase) => {
-                if (this.round < 10) {
+                if (this.round < this.maxRounds) {
                     this.round += 1;
                 } else {
                     this.gameHasEnded = true;
-                    setTimeout(_ => this.finishedSubject.next(), 0);
+                    this.sendEvent(new GameFinishedEvent(this.scoreBoard))
                 }
         })
     }
@@ -95,12 +118,5 @@ export class Game {
         if (phase instanceof c) {
             f(phase as unknown as T);
         }
-    }
-
-    public getPhase$<T>(c : {new(...args: any[]): T}): Observable<T> {
-        return this.phaseSubject.asObservable().pipe(
-            filter(e => e instanceof c),
-            map(e => (e as unknown as T))
-        );
     }
 }

@@ -56,6 +56,7 @@ export class PlayPhase extends Phase{
         } else {
             throw new CardCannotBePlayedError(player.hand.getCard(handCardIndex));
         }
+        
         this.setNextPlayer();
         this.checkIfTrickIsComplete();
     }
