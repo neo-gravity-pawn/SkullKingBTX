@@ -87,3 +87,15 @@ export class CardCannotBePlayedError extends BaseError {
         super(`Playing card ${card.color} ${card.value} is violating a rule.`);
     }
 }
+
+export class UnknownMessageTypeError extends BaseError {
+    constructor(type: string) {
+        super(`Message of type ${type} is unknown.`);
+    }
+}
+
+export class MaleformedMessageError extends BaseError {
+    constructor(type: string) {
+        super(`Message of type ${type} has wrong structure.`);
+    }
+}
