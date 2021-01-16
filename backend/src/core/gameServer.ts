@@ -12,6 +12,10 @@ export class GameServer {
         'REGISTER_PLAYER': {
             format: [['string', 'name']], 
             handler: this.onPlayerRegistered.bind(this)
+        },
+        'PLAYERS_REGISTERED': {
+            format: [['object', 'names']], 
+            handler: () => {}
         }
     }
 
@@ -30,7 +34,6 @@ export class GameServer {
         }
     }
 
-
     private checkMessage(message: IMessage): boolean {
         let isOk = true;
         this.messageDefinitions[message.type].format.forEach( (e:Array<string>) => {
@@ -45,7 +48,17 @@ export class GameServer {
         this.broadcastSubject.next(message);
     }
 
+    private createMessageOfType(type: string) : IMessage {
+        let message: IMessage = {type};
+        this.messageDefinitions[type].format.forEach(e => {
+            (message as any)[e] = {};
+        })
+        return message;
+    }
+
     private onPlayerRegistered(message: IMessage) {
-        this.broadcast({type: 'peng'});
+        const x = new Array<string>();
+        const m = this.createMessageOfType('PLAYERS_REGISTERED');
+        this.broadcast(m);
     }
 }

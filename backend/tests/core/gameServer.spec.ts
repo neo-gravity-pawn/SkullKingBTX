@@ -25,15 +25,14 @@ describe('Server', () => {
 
     })
 
-    it('should allow for player registration', (done) => {
+    it('should allow for and broadcast player registration', (done) => {
         const s = new GameServer();
         const m = {type: 'REGISTER_PLAYER', name: 'Bob'};
         s.broadcast$.subscribe((message: IMessage) => {
+            expect(message.type).to.equal('PLAYERS_REGISTERED');
+            // todo: test for players
             done();
         })
-        s.onMessage(m);
-
-        //TODO Test for maleformed messages
-        
+        s.onMessage(m);        
     });
 });
