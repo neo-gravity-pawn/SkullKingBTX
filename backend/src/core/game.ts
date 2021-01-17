@@ -49,6 +49,10 @@ export class Game {
        this.players.push(player); 
     }
 
+    getPlayers(): Array<Player> {
+        return this.players;
+    }
+
     public start(): void {
         if (this.numberOfPlayers < 2) {
             throw new NotEnoughPlayersError(this.numberOfPlayers);

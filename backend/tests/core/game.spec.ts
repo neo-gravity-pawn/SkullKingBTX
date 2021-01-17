@@ -33,6 +33,9 @@ describe('Game', () => {
         expect(g.numberOfPlayers).to.equal(1);
         g.addPlayer(p2);
         expect(g.numberOfPlayers).to.equal(2);
+        const p = g.getPlayers();
+        expect(p[0]).to.equal(p1);
+        expect(p[1]).to.equal(p2);
     })
 
     it('should be startable if at least two players are added', () => {
